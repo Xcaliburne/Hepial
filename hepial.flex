@@ -4,14 +4,14 @@ import java.lang.String;
 
 %%
 
-%class Lexer 
+%class Lexer
 %line
 %column
 %unicode
-%cup
+%standalone
 
 %{
-	public void yyerror() 
+	public void yyerror()
 	{
     	System.out.println("error line " + yyline + " column " + yycolumn + " " + yytext());
 	}
@@ -21,26 +21,28 @@ import java.lang.String;
 
 ALPHA=[A-z]
 DIGIT=[0-9]
-NUMBER=-?{DIGIT}+(,|\.)?{DIGIT}*
-NAME={ALPHA}+
-IDENTIFICATOR={ALPHA}({ALPHA}|{DIGIT}|_)*\=
-VALUE=\"{NUMBER}\"
 
+IDENTIFICATOR={ALPHA}({ALPHA}|{DIGIT})*
 NEWLINE=\r|\n|\r\n
+
+CONSTANTEENT={DIGIT}+
+CONSTANTECHAINE=[\"]([^\"]|\"\")*[\"]
+COMMENTAIRE=\/\/.*
+
 
 %%
 /* rules */
 
-"#if"				{return new Symbol(sym.IF);}
-"#set"				{return new Symbol(sym.SET);}
-"<"					{return new Symbol(sym.OPENTAG);}
-"<\/"				{return new Symbol(sym.CLOSURE);}
-">" 				{return new Symbol(sym.CLOSETAG);}
-"\/>"				{return new Symbol(sym.CLOSEINLINE);}
-{IDENTIFICATOR}		{return new Symbol(sym.IDENTIFICATOR, new String(yytext().substring(0, yytext().length() - 1)));}
-{VALUE}		 		{return new Symbol(sym.VALUE, new Double(yytext().substring(1, yytext().length() - 1)));}
-{NAME} 				{return new Symbol(sym.NAME, yytext());}
+
+/*{IDENTIFICATOR}		{return new Symbol(sym.IDENTIFICATOR, new String(yytext()));}
+{CONSTANTEENT} 		{return new Symbol(sym.CONSTANTEENT, new Integer(yytext()));}
+{CONSTANTECHAINE}	{return new Symbol(sym.CONSTANTECHAINE, new String(yytext()));}
+{COMMENTAIRE}	{return new Symbol(sym.COMMENTAIRE, new String(yytext()));}*/
+
+{IDENTIFICATOR}		{System.out.println(new String(yytext()));}
+{CONSTANTEENT} 		{System.out.println(new String(yytext()));}
+{CONSTANTECHAINE}	{System.out.println(new String(yytext()));}
+{COMMENTAIRE}			{System.out.println(new String(yytext()));}
 
 {NEWLINE}	{;}
 .			{;}
-
