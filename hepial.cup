@@ -1,95 +1,52 @@
 import java_cup.runtime.*;
 import java.util.Vector;
-import java.util.HashMap;
 import java.io.*;
 
-// Initializing HashMap and boolean for allowing output
+// Initializing
 parser code {:
-	HashMap<String, Double> val = new HashMap<>();
-	boolean output = true;
 :}
 
-terminal OPENTAG, CLOSURE, CLOSETAG, CLOSEINLINE, IF, SET;
+terminal DEBUTPRG, FINPRG, PROG, POINTVIRGULE, VIRGULE, CONSTANTE, EGAL, PARENTHESEOUVERT, PARENTHESEFERME, DEBUTFONC, FINFONC;
+terminal ENTIER, BOOLEEN, CROCHETOUVERT, CROCHETFERME, RANGE;
+terminal Integer CONSTANTEENT;
 terminal String IDENTIFICATOR;
-terminal String NAME;
-terminal Double VALUE;
+terminal String CONSTANTECHAINE;
+terminal String COMMENTAIRE;
 
-non terminal file, newtag, inlinetag, closingtag;
+non terminal axiome, programme, entete, decla, declavar, lident, declaconst, declafonct, type;
+non terminal typebase, tableau, dim, param, corps, instr, lire, ecrire, affectation, retour;
+non terminal condition, tantque, pour, expr, acces, index, operande, opebin, opeun, appelfct, pareff;
 
-// Six rules, two for each syntax, one stops the analyze, the other continues it.
-// The three syntaxes are <A />, <A></A> or <A>other stuff</A>
-file ::= inlinetag;
-file ::= inlinetag file;					// We need to throw exceptions if the closing tag is different than the opening one
-file ::= newtag:t1 file closingtag:t2 		{: if(!t2.equals(t1)) throw new Exception("erreur"); :};
+axiome ::= programme;
+
+programme ::= entete DEBUTPRG corps FINPRG;
+programme ::= entete decla DEBUTPRG corps FINPRG;
+
+entete ::= PROG IDENTIFICATOR;
+
+decla ::=  declavar | declaconst | declafonct;
+decla ::=  decla declavar | decla declaconst | decla declafonct;
+
+declavar ::= type lident POINTVIRGULE;
+
+declaconst ::= CONSTANTE type IDENTIFICATOR EGAL expr POINTVIRGULE;
+
+declafonct ::= type IDENTIFICATOR PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC;
+declafonct ::= type IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC;
+
+lident ::= IDENTIFICATOR | lident VIRGULE IDENTIFICATOR;
+
+type ::= typebase | tableau;
+
+typebase ::= ENTIER | BOOLEEN;
+
+tableau ::= typebase CROCHETOUVERT dim CROCHETFERME;
+
+dim ::= expr RANGE expr;
+dim ::= dim VIRGULE expr RANGE expr;
+
+param ::= type ident;
+param ::= param VIRGULE type ident;
+
+
 file ::= newtag:t1 file closingtag:t2 file 	{: if(!t2.equals(t1)) throw new Exception("erreur"); :};
-file ::= newtag:t1 closingtag:t2 			{: if(!t2.equals(t1)) throw new Exception("erreur"); :};
-file ::= newtag:t1 closingtag:t2 file 		{: if(!t2.equals(t1)) throw new Exception("erreur"); :};
-
-// Rule for eventual words after an opening tag. It is important to report the previous result
-newtag ::= newtag:s NAME:n	{:
-								// We print the word if it is needed
-								if(output)
-									System.out.println(n);
-								// RESULT may contain the name of the opening tag for comparaison later, we need to keep it
-								RESULT = s;
-							:};
-// Rule for a basic <A> tag, the name is kept in s. We return it in RESULT for further comparaison.
-newtag ::= OPENTAG NAME:s CLOSETAG	{: 	
-										if(output)
-											System.out.println("<" + s + ">");
-										RESULT = new String(s);
-									:};
-// Rule for a <A foo="-3,1"> tag
-newtag ::= OPENTAG NAME:s IDENTIFICATOR:i VALUE:v CLOSETAG	{:
-																if(output)
-																	System.out.println("<" + s + " " + i + "=\"" + v.toString() + "\">");
-																RESULT = new String(s);
-															:};
-// Rule for a <#if test=="value"> tag
-newtag ::= OPENTAG IF IDENTIFICATOR:i VALUE:v CLOSETAG	{:
-															// If the value has not been declared...
-															if(!val.containsKey(i))
-																output = false;
-															// Or is not equals to what is stored, we stop printing
-															else if(!val.get(i).equals(v))
-																output = false;
-															// We still need this to check if the closing tag is correct
-															RESULT = new String("#if");
-														:};
-
-// Rule for adding words after the tag, we print them if needed and report the name of the tag in RESULT
-closingtag ::= closingtag:s NAME:n	{:
-										if(output)
-											System.out.println(n);
-										RESULT = s;
-									:};
-// Rule for a basic closing tag </A>
-closingtag ::= CLOSURE NAME:s CLOSETAG	{:
-											if(output)
-												System.out.println("</" + s + ">");
-											RESULT = new String(s);
-										:};
-// Rule for a </#if> closing tag, we set the output to true
-closingtag ::= CLOSURE IF CLOSETAG	{:
-										output = true;
-										RESULT = new String("#if");
-									:};
-
-// Rule for adding words after an inline tag
-inlinetag ::= inlinetag NAME:n	{:
-									if(output)
-										System.out.println(n);
-								:};
-// Rule for a basic inline tag <A />
-inlinetag ::= OPENTAG NAME:s CLOSEINLINE	{: 
-												if(output)
-													System.out.println("<" + s + " />");
-											:};
-// Rule for a <A foo="4" /> inline tag
-inlinetag ::= OPENTAG NAME:s IDENTIFICATOR:i VALUE:v CLOSEINLINE	{: 
-																		if(output)
-																			System.out.println("<" + s + " " + i + "=\"" + i.toString() + "\" />");
-																	:};
-// Rule for a <#set ident="value" /> inline tag. We simply use put from HashMap, it updates or create the key/value pair in the map.
-inlinetag ::= OPENTAG SET IDENTIFICATOR:i VALUE:v CLOSEINLINE	{: val.put(i, v); :};
-
