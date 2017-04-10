@@ -1,5 +1,5 @@
-SRCFLEX = SGML.flex
-SRCCUP = SGML.cup
+SRCFLEX = hepial.flex
+SRCCUP = hepial.cup
 OBJ = sym.class parser.class Lexer.class test.class
 
 all : Lexer.java sym.java parser.java class run
@@ -17,7 +17,7 @@ class: sym.java parser.java Lexer.java
 	javac -classpath java-cup-11b.jar:. test.java
 
 run:
-	java -classpath java-cup-11b.jar:. test exemple
+	java -classpath java-cup-11b.jar:. test exemple/hepial1
 
 runError:
 	java -classpath java-cup-11b.jar:. test exempleErreur

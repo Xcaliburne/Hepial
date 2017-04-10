@@ -7,15 +7,20 @@ parser code {:
 :}
 
 terminal DEBUTPRG, FINPRG, PROG, POINTVIRGULE, VIRGULE, CONSTANTE, EGAL, PARENTHESEOUVERT, PARENTHESEFERME, DEBUTFONC, FINFONC;
-terminal ENTIER, BOOLEEN, CROCHETOUVERT, CROCHETFERME, RANGE;
+terminal ENTIER, BOOLEEN, CROCHETOUVERT, CROCHETFERME, RANGE, LIRE, ECRIRE, A, VRAI, FAUX, FOIS, DIVISE, PLUS, MOINS;
+terminal PLUSGRAND, PLUSPETIT, PLUSGRANDEGAL, PLUSPETITEGAL, ET, OU, EGALITE, DIFFERENCE, NON, TILDE, RETOURNE, SI, ALORS;
+terminal SINON, FINSI, TANTQUE, POUR, FAIRE, FINTANTQUE, ALLANTDE, FINPOUR;
 terminal Integer CONSTANTEENT;
 terminal String IDENTIFICATOR;
 terminal String CONSTANTECHAINE;
-terminal String COMMENTAIRE;
 
 non terminal axiome, programme, entete, decla, declavar, lident, declaconst, declafonct, type;
 non terminal typebase, tableau, dim, param, corps, instr, lire, ecrire, affectation, retour;
 non terminal condition, tantque, pour, expr, acces, index, operande, opebin, opeun, appelfct, pareff;
+
+precedence left PLUS, MOINS, FOIS ,DIVISE, EGALITE, DIFFERENCE;
+precedence left PLUSGRAND, PLUSPETIT, PLUSGRANDEGAL, PLUSPETITEGAL, ET, OU, RANGE;
+precedence right TILDE, NON;
 
 axiome ::= programme;
 
@@ -24,8 +29,12 @@ programme ::= entete decla DEBUTPRG corps FINPRG;
 
 entete ::= PROG IDENTIFICATOR;
 
-decla ::=  declavar | declaconst | declafonct;
-decla ::=  decla declavar | decla declaconst | decla declafonct;
+decla ::= declavar;
+decla ::= declaconst;
+decla ::= declafonct;
+decla ::= decla declavar;
+decla ::= decla declaconst;
+decla ::= decla declafonct;
 
 declavar ::= type lident POINTVIRGULE;
 
@@ -45,8 +54,70 @@ tableau ::= typebase CROCHETOUVERT dim CROCHETFERME;
 dim ::= expr RANGE expr;
 dim ::= dim VIRGULE expr RANGE expr;
 
-param ::= type ident;
-param ::= param VIRGULE type ident;
+param ::= type IDENTIFICATOR;
+param ::= param VIRGULE type IDENTIFICATOR;
 
+//todo finish grammar
+corps ::= instr | instr corps;
 
-file ::= newtag:t1 file closingtag:t2 file 	{: if(!t2.equals(t1)) throw new Exception("erreur"); :};
+instr ::= affectation;
+instr ::= ecrire;
+instr ::= lire;
+instr ::= condition;
+instr ::= retour;
+instr ::= tantque;
+instr ::= pour;
+
+lire ::= LIRE IDENTIFICATOR POINTVIRGULE;
+
+ecrire ::= ECRIRE expr POINTVIRGULE;
+ecrire ::= ECRIRE CONSTANTECHAINE POINTVIRGULE;
+
+affectation ::= acces EGAL expr POINTVIRGULE;
+
+retour ::= RETOURNE expr POINTVIRGULE;
+
+condition ::= SI expr ALORS corps SINON corps FINSI;
+
+tantque ::= TANTQUE expr FAIRE corps FINTANTQUE;
+
+pour ::= POUR IDENTIFICATOR ALLANTDE expr A expr FAIRE corps FINPOUR;
+
+expr ::= expr opebin expr;
+expr ::= opeun expr;
+expr ::= PARENTHESEOUVERT expr PARENTHESEFERME;
+expr ::= operande;
+
+acces ::= IDENTIFICATOR;
+acces ::= IDENTIFICATOR index;
+
+index ::= CROCHETOUVERT expr CROCHETFERME;
+index ::= CROCHETOUVERT expr CROCHETFERME index;
+
+operande ::= acces;
+operande ::= appelfct;
+operande ::= CONSTANTEENT;
+operande ::= VRAI;
+operande ::= FAUX;
+
+opebin ::= PLUS;
+opebin ::= MOINS;
+opebin ::= DIVISE;
+opebin ::= FOIS;
+opebin ::= EGALITE;
+opebin ::= DIFFERENCE;
+opebin ::= PLUSPETIT;
+opebin ::= PLUSGRAND;
+opebin ::= PLUSGRANDEGAL;
+opebin ::= PLUSPETITEGAL;
+opebin ::= ET;
+opebin ::= OU;
+
+opeun ::= TILDE;
+opeun ::= NON;
+
+appelfct ::= IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME;
+appelfct ::= IDENTIFICATOR PARENTHESEOUVERT pareff PARENTHESEFERME;
+
+pareff ::= expr;
+pareff ::= pareff VIRGULE expr;
