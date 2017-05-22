@@ -14,7 +14,7 @@ class: sym.java parser.java Lexer.java
 	javac -classpath java-cup-11b.jar:. sym.java
 	javac -classpath java-cup-11b.jar:. parser.java
 	javac -classpath java-cup-11b.jar:. Lexer.java
-	javac -classpath java-cup-11b.jar:. test.java
+	javac -classpath java-cup-11b.jar:. Compilateur.java
 
 run:
 	java -classpath java-cup-11b.jar:. test exemple/hepial1
