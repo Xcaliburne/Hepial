@@ -1,9 +1,14 @@
 import java_cup.runtime.*;
 import java.util.Vector;
 import java.io.*;
+import java.util.*;
+import java.lang.*;
+import Arbre.*;
 
 // Initializing
 parser code {:
+  SymbolTable TDS;
+  public Type lastType;
 :}
 
 terminal DEBUTPRG, FINPRG, PROG, POINTVIRGULE, VIRGULE, CONSTANTE, EGAL, PARENTHESEOUVERT, PARENTHESEFERME, DEBUTFONC, FINFONC;
@@ -14,9 +19,12 @@ terminal Integer CONSTANTEENT;
 terminal String IDENTIFICATOR;
 terminal String CONSTANTECHAINE;
 
-non terminal axiome, programme, entete, decla, declavar, lident, declaconst, declafonct, type;
-non terminal typebase, tableau, dim, param, corps, instr, lire, ecrire, affectation, retour;
+non terminal axiome, programme, entete, decla, declavar, declaconst, declafonct;
+non terminal typebase, tableau, param, corps, instr, lire, ecrire, affectation, retour;
 non terminal condition, tantque, pour, expr, acces, index, operande, opebin, opeun, appelfct, pareff;
+non terminal int dim;
+non terminal ArrayList<String> lident;
+non terminal Type type;
 
 precedence left PLUS, MOINS, FOIS ,DIVISE, EGALITE, DIFFERENCE;
 precedence left PLUSGRAND, PLUSPETIT, PLUSGRANDEGAL, PLUSPETITEGAL, ET, OU, RANGE;
@@ -25,53 +33,95 @@ precedence right TILDE, NON;
 axiome ::= programme;
 
 programme ::= entete DEBUTPRG corps FINPRG;
+
 programme ::= entete decla DEBUTPRG corps FINPRG;
 
-entete ::= PROG IDENTIFICATOR;
+entete ::= PROG IDENTIFICATOR
+{:
+  TDS.getInstance().openBlock();
+:}
+;
 
-decla ::= declavar;
-decla ::= declaconst;
-decla ::= declafonct;
-decla ::= decla declavar;
-decla ::= decla declaconst;
-decla ::= decla declafonct;
+decla ::= declavar
+        |declaconst
+        |declafonct
+        |decla declavar
+        |decla declaconst
+        |decla declafonct
+;
 
-declavar ::= type lident POINTVIRGULE;
+declavar ::= type:type lident:id_list POINTVIRGULE
+{:
+  for (String id : id_list) {
+		TDS.getInstance().add(id, new Symbole(lastType, id_listright));
+    System.out.println("line " + id_listright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+	}
+:}
+;
 
-declaconst ::= CONSTANTE type IDENTIFICATOR EGAL expr POINTVIRGULE;
+declaconst ::= CONSTANTE type IDENTIFICATOR:id EGAL expr POINTVIRGULE
+{:
+  TDS.getInstance().add(id, new Symbole(lastType, idright));
+  System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+:}
+;
 
-declafonct ::= type IDENTIFICATOR PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC;
-declafonct ::= type IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC;
+declafonct ::= type IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC
+             | type IDENTIFICATOR PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC;
 
-lident ::= IDENTIFICATOR | lident VIRGULE IDENTIFICATOR;
+lident ::= IDENTIFICATOR:id
+{:
+  ArrayList<String> id_list = new ArrayList<String>();
+  id_list.add(id);
+  RESULT = id_list;
+:}
+          | lident:id_list VIRGULE IDENTIFICATOR:id
+{:
+  id_list.add(id);
+  RESULT = id_list;
+:}
+;
 
 type ::= typebase | tableau;
 
-typebase ::= ENTIER | BOOLEEN;
+typebase ::= ENTIER
+{:
+  lastType = TypeEntier.getInstance();
+:}
+| BOOLEEN
+{:
+  lastType = TypeBooleen.getInstance();
+:}
+;
 
-tableau ::= typebase CROCHETOUVERT dim CROCHETFERME;
+tableau ::= typebase CROCHETOUVERT dim CROCHETFERME
+{:
+	
+:}
+;
 
-dim ::= expr RANGE expr;
-dim ::= dim VIRGULE expr RANGE expr;
+dim ::= expr RANGE expr
+      | dim VIRGULE expr RANGE expr;
 
-param ::= type IDENTIFICATOR;
-param ::= param VIRGULE type IDENTIFICATOR;
+param ::= type IDENTIFICATOR
+        | param VIRGULE type IDENTIFICATOR;
 
 //todo finish grammar
-corps ::= instr | instr corps;
+corps ::= instr
+        | instr corps;
 
-instr ::= affectation;
-instr ::= ecrire;
-instr ::= lire;
-instr ::= condition;
-instr ::= retour;
-instr ::= tantque;
-instr ::= pour;
+instr ::= affectation
+        | ecrire
+        | lire
+        | condition
+        | retour
+        | tantque
+        | pour;
 
 lire ::= LIRE IDENTIFICATOR POINTVIRGULE;
 
-ecrire ::= ECRIRE expr POINTVIRGULE;
-ecrire ::= ECRIRE CONSTANTECHAINE POINTVIRGULE;
+ecrire ::= ECRIRE expr POINTVIRGULE
+         | ECRIRE CONSTANTECHAINE POINTVIRGULE;
 
 affectation ::= acces EGAL expr POINTVIRGULE;
 
@@ -83,41 +133,41 @@ tantque ::= TANTQUE expr FAIRE corps FINTANTQUE;
 
 pour ::= POUR IDENTIFICATOR ALLANTDE expr A expr FAIRE corps FINPOUR;
 
-expr ::= expr opebin expr;
-expr ::= opeun expr;
-expr ::= PARENTHESEOUVERT expr PARENTHESEFERME;
-expr ::= operande;
+expr ::= expr opebin expr
+      |  opeun expr
+      |  PARENTHESEOUVERT expr PARENTHESEFERME
+      |  operande;
 
-acces ::= IDENTIFICATOR;
-acces ::= IDENTIFICATOR index;
+acces ::= IDENTIFICATOR
+        | IDENTIFICATOR index;
 
-index ::= CROCHETOUVERT expr CROCHETFERME;
-index ::= CROCHETOUVERT expr CROCHETFERME index;
+index ::= CROCHETOUVERT expr CROCHETFERME
+        | CROCHETOUVERT expr CROCHETFERME index;
 
-operande ::= acces;
-operande ::= appelfct;
-operande ::= CONSTANTEENT;
-operande ::= VRAI;
-operande ::= FAUX;
+operande ::= acces
+          |  appelfct
+          |  CONSTANTEENT
+          |  VRAI
+          |  FAUX;
 
-opebin ::= PLUS;
-opebin ::= MOINS;
-opebin ::= DIVISE;
-opebin ::= FOIS;
-opebin ::= EGALITE;
-opebin ::= DIFFERENCE;
-opebin ::= PLUSPETIT;
-opebin ::= PLUSGRAND;
-opebin ::= PLUSGRANDEGAL;
-opebin ::= PLUSPETITEGAL;
-opebin ::= ET;
-opebin ::= OU;
+opebin ::= PLUS
+        |  MOINS
+        |  DIVISE
+        |  FOIS
+        |  EGALITE
+        |  DIFFERENCE
+        |  PLUSPETIT
+        |  PLUSGRAND
+        |  PLUSGRANDEGAL
+        |  PLUSPETITEGAL
+        |  ET
+        |  OU;
 
-opeun ::= TILDE;
-opeun ::= NON;
+opeun ::= TILDE
+        | NON;
 
-appelfct ::= IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME;
-appelfct ::= IDENTIFICATOR PARENTHESEOUVERT pareff PARENTHESEFERME;
+appelfct ::= IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME
+          |  IDENTIFICATOR PARENTHESEOUVERT pareff PARENTHESEFERME;
 
-pareff ::= expr;
-pareff ::= pareff VIRGULE expr;
+pareff ::= expr
+        |  pareff VIRGULE expr;

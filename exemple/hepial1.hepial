@@ -1,7 +1,10 @@
 programme hepial1
 
-entier x;
+entier x, z, test;
 constante booleen y = vrai;
+constante entier t = 1;
+
+
 
 debutprg
 	y = 10 + 2;

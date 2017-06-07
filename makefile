@@ -17,10 +17,10 @@ class: sym.java parser.java Lexer.java
 	javac -classpath java-cup-11b.jar:. Compilateur.java
 
 run:
-	java -classpath java-cup-11b.jar:. test exemple/hepial1
+	java -classpath java-cup-11b.jar:. Compilateur exemple/hepial1.hepial
 
 runError:
-	java -classpath java-cup-11b.jar:. test exempleErreur
+	java -classpath java-cup-11b.jar:. Compilateur exempleErreur
 
 clean:
 	rm -f *.class *~ Lexer.java sym.java parser.java parse_prog

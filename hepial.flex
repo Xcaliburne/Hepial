@@ -84,10 +84,10 @@ COMMENTAIRE=\/\/.*
 "ou"				{return new Symbol(sym.OU);}
 "et"				{return new Symbol(sym.ET);}
 "non"				{return new Symbol(sym.NON);}
-{IDENTIFICATOR}		{System.out.println(yytext()); return new Symbol(sym.IDENTIFICATOR, new String(yytext()));}
-{CONSTANTEENT} 		{System.out.println(yytext()); return new Symbol(sym.CONSTANTEENT, new Integer(yytext()));}
-{CONSTANTECHAINE}	{System.out.println(yytext()); return new Symbol(sym.CONSTANTECHAINE, new String(yytext()));}
-{COMMENTAIRE}		{System.out.println(yytext());}
+{IDENTIFICATOR}		{/*System.out.println(yytext());*/ return new Symbol(sym.IDENTIFICATOR, new String(yytext()));}
+{CONSTANTEENT} 		{/*System.out.println(yytext());*/ return new Symbol(sym.CONSTANTEENT, new Integer(yytext()));}
+{CONSTANTECHAINE}	{/*System.out.println(yytext());*/ return new Symbol(sym.CONSTANTECHAINE, new String(yytext()));}
+{COMMENTAIRE}		{/*System.out.println(yytext());*/}
 
 {NEWLINE}	{;}
 .			{;}
