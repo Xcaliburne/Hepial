@@ -1,4 +1,7 @@
-package Arbre;
+package ch.hepia.Arbre;
+
+import ch.hepia.Types.Type;
+import ch.hepia.Types.TypeBooleen;
 
 public class SupEgal extends Relation{
 	public SupEgal(Expression g, Expression d, int lig) {

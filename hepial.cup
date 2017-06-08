@@ -3,7 +3,9 @@ import java.util.Vector;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-import Arbre.*;
+import ch.hepia.Arbre.*;
+import ch.hepia.TDS.*;
+import ch.hepia.Types.*;
 
 // Initializing
 parser code {:
@@ -22,7 +24,7 @@ terminal String CONSTANTECHAINE;
 non terminal axiome, programme, entete, decla, declavar, declaconst, declafonct;
 non terminal typebase, tableau, param, corps, instr, lire, ecrire, affectation, retour;
 non terminal condition, tantque, pour, expr, acces, index, operande, opebin, opeun, appelfct, pareff;
-non terminal int dim;
+non terminal dim;
 non terminal ArrayList<String> lident;
 non terminal Type type;
 
@@ -43,11 +45,11 @@ entete ::= PROG IDENTIFICATOR
 ;
 
 decla ::= declavar
-        |declaconst
-        |declafonct
-        |decla declavar
-        |decla declaconst
-        |decla declafonct
+        | declaconst
+        | declafonct
+        | decla declavar
+        | decla declaconst
+        | decla declafonct
 ;
 
 declavar ::= type:type lident:id_list POINTVIRGULE
@@ -61,13 +63,23 @@ declavar ::= type:type lident:id_list POINTVIRGULE
 
 declaconst ::= CONSTANTE type IDENTIFICATOR:id EGAL expr POINTVIRGULE
 {:
-  TDS.getInstance().add(id, new Symbole(lastType, idright));
-  System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+	TDS.getInstance().add(id, new Symbole(lastType, idright));
+	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 :}
 ;
 
-declafonct ::= type IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC
-             | type IDENTIFICATOR PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC;
+declafonct ::= type IDENTIFICATOR:id
+/*{:
+	TDS.getInstance().add(id, new Symbole(lastType, idright));
+	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+:}*/
+PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC
+             | type IDENTIFICATOR:id
+/*{:
+	TDS.getInstance().add(id, new Symbole(lastType, idright));
+  	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+:}*/
+PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC;
 
 lident ::= IDENTIFICATOR:id
 {:
@@ -95,9 +107,6 @@ typebase ::= ENTIER
 ;
 
 tableau ::= typebase CROCHETOUVERT dim CROCHETFERME
-{:
-	
-:}
 ;
 
 dim ::= expr RANGE expr

@@ -1,4 +1,7 @@
-package Arbre;
+package ch.hepia.Arbre;
+
+import ch.hepia.Types.Type;
+import ch.hepia.Types.TypeEntier;
 
 public class Soustraction extends Arithmetique{
 	public Soustraction(Expression g, Expression d, int lig) {

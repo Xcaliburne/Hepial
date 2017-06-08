@@ -1,4 +1,7 @@
-package Arbre;
+package ch.hepia.Arbre;
+
+import ch.hepia.Types.Type;
+import ch.hepia.Types.TypeBooleen;
 
 public class Superieur extends Relation{
 	public Superieur (Expression g, Expression d, int lig) {

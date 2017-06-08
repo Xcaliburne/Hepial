@@ -1,4 +1,4 @@
-package Arbre;
+package ch.hepia.TDS;
 
 import java.util.ArrayList;
 import java.util.HashMap;

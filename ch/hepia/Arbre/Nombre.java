@@ -1,4 +1,4 @@
-package Arbre;
+package ch.hepia.Arbre;
 
 public class Nombre extends Expression {
 	private int valeur;

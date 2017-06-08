@@ -1,4 +1,6 @@
-package Arbre;
+package ch.hepia.Arbre;
+
+import ch.hepia.Types.Type;
 
 public class Idf extends Expression {
 	protected String nom;

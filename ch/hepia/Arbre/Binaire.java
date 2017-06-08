@@ -1,4 +1,4 @@
-package Arbre;
+package ch.hepia.Arbre;
 
 public abstract class Binaire extends Expression {
 		protected Expression operandeGauche; // operande gauche

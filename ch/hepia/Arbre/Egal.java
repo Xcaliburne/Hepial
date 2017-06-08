@@ -1,4 +1,7 @@
-package Arbre;
+package ch.hepia.Arbre;
+
+import ch.hepia.Types.Type;
+import ch.hepia.Types.TypeBooleen;
 
 public class Egal extends Relation{
 	public Egal (Expression g, Expression d, int lig) {

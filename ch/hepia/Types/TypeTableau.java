@@ -1,4 +1,4 @@
-package Arbre;
+package ch.hepia.Types;
 
 public class TypeTableau {
 	

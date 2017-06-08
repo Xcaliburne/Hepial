@@ -1,4 +1,4 @@
-package Arbre;
+package ch.hepia.Arbre;
 
 public abstract class Expression implements ArbreAbstrait {
    	private int lig;
