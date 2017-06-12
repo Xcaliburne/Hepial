@@ -5,8 +5,8 @@ import ch.hepia.Types.TypeBooleen;
 
 public class Different extends Relation{
 
-	public Different(Expression g, Expression d, int lig) {
-		super(g, d, lig);
+	public Different(int lig) {
+		super(null, null, lig);
 		// TODO Auto-generated constructor stub
 	}
 	

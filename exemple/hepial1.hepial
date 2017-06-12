@@ -1,11 +1,15 @@
 programme hepial1
 
 entier x, z, test;
-constante booleen y = vrai;
 constante entier t = 1;
 
 
 
 debutprg
-	y = 10 + 2;
+	si x == 2 alors
+		z = 1;
+	sinon
+		z = 2;
+	finsi
+	y = 10 - 2;
 finprg

@@ -2,13 +2,13 @@ package ch.hepia.Arbre;
 
 public abstract class Binaire extends Expression {
 		protected Expression operandeGauche; // operande gauche
-		protected Expression operandeDroit; // operande droit
+		protected Expression operandeDroite; // operande droit
 		
 		// Construire a partir des deux operandes
 		public Binaire (Expression g, Expression d, int lig) {
 			super(lig);
 			operandeGauche = g;
-			operandeDroit = d;
+			operandeDroite = d;
 		} // binaire
 		
 		public Expression getOperandeGauche() {
@@ -19,16 +19,16 @@ public abstract class Binaire extends Expression {
 			this.operandeGauche = operandeGauche;
 		}
 
-		public Expression getOperandeDroit() {
-			return operandeDroit;
+		public Expression getOperandeDroite() {
+			return operandeDroite;
 		}
 
-		public void setOperandeDroit(Expression operandeDroit) {
-			this.operandeDroit = operandeDroit;
+		public void setOperandeDroite(Expression operandeDroit) {
+			this.operandeDroite = operandeDroit;
 		}
 
 		public String toString() {
-			return "(" + operandeGauche+operateur()+operandeDroit+")";
+			return "(" + operandeGauche+operateur()+operandeDroite+")";
 		} // toString
 		
 		public abstract String operateur();

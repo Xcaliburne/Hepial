@@ -4,8 +4,8 @@ import ch.hepia.Types.Type;
 import ch.hepia.Types.TypeBooleen;
 
 public class Superieur extends Relation{
-	public Superieur (Expression g, Expression d, int lig) {
-		super(g, d, lig);
+	public Superieur (int lig) {
+		super(null, null, lig);
 		// TODO Auto-generated constructor stub
 	}
 

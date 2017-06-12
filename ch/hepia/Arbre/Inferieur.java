@@ -5,8 +5,8 @@ import ch.hepia.Types.TypeBooleen;
 
 public class Inferieur extends Relation{
 
-	public Inferieur(Expression g, Expression d, int lig) {
-		super(g, d, lig);
+	public Inferieur(int lig) {
+		super(null, null, lig);
 		// TODO Auto-generated constructor stub
 	}
 
