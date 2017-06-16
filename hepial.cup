@@ -3,9 +3,10 @@ import java.util.Vector;
 import java.io.*;
 import java.util.*;
 import java.lang.*;
-import ch.hepia.Arbre.*;
-import ch.hepia.TDS.*;
-import ch.hepia.Types.*;
+import ch.hepia.Compilateur.*;
+import ch.hepia.Compilateur.Arbre.*;
+import ch.hepia.Compilateur.TDS.*;
+import ch.hepia.Compilateur.Types.*;
 
 // Initializing
 parser code {:
@@ -34,7 +35,22 @@ precedence left PLUS, MOINS, FOIS ,DIVISE, EGALITE, DIFFERENCE;
 precedence left PLUSGRAND, PLUSPETIT, PLUSGRANDEGAL, PLUSPETITEGAL, ET, OU, RANGE;
 precedence right TILDE, NON;
 
-axiome ::= programme;
+axiome ::= programme
+{:
+	Linstr list = (Linstr)stack.pop();
+	Bloc b = (Bloc)stack.pop();
+	b.add(list);
+	stack.push(b);
+	
+	AnalyseurSemantique.getInstance().visiter(stack);
+	GestionnaireErreur errorhandler = GestionnaireErreur.getInstance();
+	System.out.println(errorhandler.isEmpty());
+	if (!errorhandler.isEmpty()){
+		errorhandler.printErrors();
+		System.exit(0);
+	}
+:}
+;
 
 programme ::= entete DEBUTPRG corps FINPRG;
 
@@ -50,9 +66,9 @@ entete ::= PROG IDENTIFICATOR
 decla ::= declavar
         | declaconst
         | declafonct
-        | decla declavar
-        | decla declaconst
-        | decla declafonct
+        | declavar decla
+        | declaconst decla
+        | declafonct decla
 ;
 
 declavar ::= type:type lident:id_list POINTVIRGULE
@@ -64,25 +80,29 @@ declavar ::= type:type lident:id_list POINTVIRGULE
 :}
 ;
 
-declaconst ::= CONSTANTE type affectation
+declaconst ::= CONSTANTE type IDENTIFICATOR:id EGAL expr POINTVIRGULE
 {:
-	TDS.getInstance().add(lastId, new Symbole(lastType, 1));
-	System.out.println(lastId+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+	Expression expr = (Expression)stack.pop();
+	TDS.getInstance().add(id, new Symbole(lastType, 1));
+	Bloc bloc = (Bloc) stack.pop();
+	bloc.add(new Affectation(expr, new Idf(id, 1), 1));
+	stack.push(bloc);
+	System.out.println(id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 :}
 ;
 
-declafonct ::= type IDENTIFICATOR:id
-/*{:
+declafonct ::= type IDENTIFICATOR:id PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC
+{:
 	TDS.getInstance().add(id, new Symbole(lastType, idright));
 	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
-:}*/
-PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC
-             | type IDENTIFICATOR:id
-/*{:
+:}
+             | type IDENTIFICATOR:id PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC
+{:
 	TDS.getInstance().add(id, new Symbole(lastType, idright));
   	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
-:}*/
-PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC;
+:}
+             
+;
 
 lident ::= IDENTIFICATOR:id
 {:
@@ -119,8 +139,18 @@ param ::= type IDENTIFICATOR
         | param VIRGULE type IDENTIFICATOR;
 
 //todo finish grammar
-corps ::= instr
-        | instr corps;
+corps ::= corps instr
+{:
+	Instruction instr = (Instruction)stack.pop();
+	Linstr list = (Linstr)stack.pop();
+	list.add(instr);
+	stack.push(list);
+:}
+        |
+{:
+	stack.push(new Linstr(0));
+:}        
+;
 
 instr ::= affectation
         | ecrire
@@ -130,55 +160,53 @@ instr ::= affectation
         | tantque
         | pour;
 
-lire ::= LIRE IDENTIFICATOR POINTVIRGULE;
+lire ::= LIRE IDENTIFICATOR:id POINTVIRGULE
+{:
+	stack.push(new Lire(new Idf(id, 1), 1));
+:}
+;
 
 ecrire ::= ECRIRE expr POINTVIRGULE
+{:
+	Expression expr = (Expression)stack.pop();
+	stack.push(new Ecrire(expr, 1));
+:}
          | ECRIRE CONSTANTECHAINE POINTVIRGULE;
 
 affectation ::= acces EGAL expr POINTVIRGULE
 {:
 	Expression source = (Expression) (stack.pop());
 	Idf dest = (Idf) (stack.pop());
-	Bloc bloc = (Bloc) (stack.pop());
-	Affectation affect = new Affectation(source, dest, 1);
-	System.out.println(affect);
-	bloc.add(affect);
-	stack.push(bloc);
+	stack.push(new Affectation(source, dest, 1));
 :}
 ;
 
 retour ::= RETOURNE expr POINTVIRGULE;
 
-condition ::= SI expr ALORS {: System.out.println("pushed bloc"); stack.push(new Bloc(1)); :} corps SINON {: System.out.println("pushed bloc"); stack.push(new Bloc(1)); :} corps FINSI
+condition ::= SI expr ALORS corps SINON corps FINSI
 {:
-	Bloc sinon = (Bloc) stack.pop();
-	Bloc alors = (Bloc) stack.pop();
+	Linstr sinon = (Linstr) stack.pop();
+	Linstr alors = (Linstr) stack.pop();
 	Expression cond = (Expression) stack.pop();
-	Bloc b = (Bloc)stack.pop();
-	b.add(new Condition(cond, alors, sinon, 1));
-	stack.push(b);
+	stack.push(new Condition(cond, alors, sinon, 1));
 :}
 ;
 
-tantque ::= TANTQUE expr FAIRE {: System.out.println("pushed bloc"); stack.push(new Bloc(1)); :} corps FINTANTQUE
+tantque ::= TANTQUE expr FAIRE corps FINTANTQUE
 {:
-	Bloc boucle = (Bloc) stack.pop();
+	Linstr boucle = (Linstr) stack.pop();
 	Expression cond = (Expression) stack.pop();
-	Bloc b = (Bloc)stack.pop();
-	b.add(new Tantque(cond, boucle, 1));
-	stack.push(b);
+	stack.push(new Tantque(cond, boucle, 1));
 :}
 ;
 
-pour ::= POUR IDENTIFICATOR ALLANTDE expr A expr FAIRE {: System.out.println("pushed bloc"); stack.push(new Bloc(1)); :} corps FINPOUR
+pour ::= POUR IDENTIFICATOR ALLANTDE expr A expr FAIRE corps FINPOUR
 {:
-	Bloc boucle = (Bloc) stack.pop();
+	Linstr boucle = (Linstr) stack.pop();
 	Expression BorneSup = (Expression) stack.pop();
 	Expression BorneInf = (Expression) stack.pop();
 	Idf ident = (Idf) stack.pop();
-	Bloc b = (Bloc)stack.pop();
-	b.add(new Pour(ident, BorneInf, BorneSup, boucle, 1));
-	stack.push(b);
+	stack.push(new Pour(ident, BorneInf, BorneSup, boucle, 1));
 :}
 ;
 
@@ -190,7 +218,6 @@ expr ::= expr opebin expr
 	opebin.setOperandeDroite(exprd);
 	opebin.setOperandeGauche(exprg);
 	stack.push(opebin);
-	System.out.println(opebin);
 :}
       |  opeun expr
       |  PARENTHESEOUVERT expr PARENTHESEFERME
@@ -198,7 +225,6 @@ expr ::= expr opebin expr
 
 acces ::= IDENTIFICATOR:id
 {:
-	lastId = id;
 	stack.push(new Idf(id, 1));
 :}
         | IDENTIFICATOR index;
@@ -210,7 +236,6 @@ operande ::= acces
           |  appelfct
           |  CONSTANTEENT:constante
 {:
-	System.out.println("pushed " + constante);
 	stack.push(new Nombre(constante, 1));
 :}
           |  VRAI
@@ -230,8 +255,9 @@ opebin ::= PLUS {: stack.push(new Addition(1)); :}
         |  OU {: stack.push(new Ou(1)); :}
 ;
 
-opeun ::= TILDE
-        | NON;
+opeun ::= TILDE {: //stack.push(new Et(1)); :}
+        | NON {: //stack.push(new Ou(1)); :}
+        ;
 
 appelfct ::= IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME
           |  IDENTIFICATOR PARENTHESEOUVERT pareff PARENTHESEFERME;

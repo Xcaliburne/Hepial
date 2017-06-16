@@ -4,12 +4,11 @@ entier x, z, test;
 constante entier t = 1;
 
 
-
 debutprg
-	si x == 2 alors
-		z = 1;
+	si x==1 alors
+		z= 2*x;
 	sinon
-		z = 2;
+		test = z/2;
 	finsi
 	y = 10 - 2;
 finprg
