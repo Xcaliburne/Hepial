@@ -1,8 +1,10 @@
-package Arbre;
+package ch.hepia.Compilateur.TDS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
+
+import ch.hepia.Compilateur.GestionnaireErreur;
 
 public class SymbolTable {
 	private static SymbolTable singleton = null;
@@ -27,7 +29,7 @@ public class SymbolTable {
 		currentOpenBlocks.pop();
 	}
 
-	public String identify(String name)
+	public Symbole identify(String name)
 	{
 		Stack<Integer> tmp = new Stack<>();
 		while(!currentOpenBlocks.isEmpty())
@@ -38,17 +40,17 @@ public class SymbolTable {
 			{
 				while(!tmp.isEmpty())
 					currentOpenBlocks.push(tmp.pop());
-				return dictionnaries.get(current).get(name).getType().toString();
+				return dictionnaries.get(current).get(name);
 			}
 		}
-		System.err.println("Variable undeclared");
+		GestionnaireErreur.getInstance().add(name+": Variable non-declaree");
 		return null;
 	}
 
 	public void add(String name, Symbole s)
 	{
 		if(dictionnaries.get(currentBlockCount-1).containsKey(name))
-			System.err.println("Variable already declared: " + name);
+			GestionnaireErreur.getInstance().add("Variable already declared: " + name);
 		else
 			dictionnaries.get(currentBlockCount-1).put(name, s);
 	}

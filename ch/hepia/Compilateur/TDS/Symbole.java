@@ -1,4 +1,6 @@
-package Arbre;
+package ch.hepia.Compilateur.TDS;
+
+import ch.hepia.Compilateur.Types.Type;
 
 public class Symbole {
 

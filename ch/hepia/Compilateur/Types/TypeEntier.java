@@ -1,4 +1,4 @@
-package Arbre;
+package ch.hepia.Compilateur.Types;
 
 import java.util.*;
 
