@@ -82,7 +82,7 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write("invokespecial java/util/Scanner/<init>(Ljava/io/InputStream;)V");
 			jasminStream.newLine();
-			jasminStream.write("invokevirtual java/io/Scanner/nextInt()I");
+			jasminStream.write("invokevirtual java/util/Scanner/nextInt()I");
 			jasminStream.newLine();
 			jasminStream.write("ireturn");
 			jasminStream.newLine();
@@ -534,7 +534,7 @@ public class JasminGenerateur implements Visiteur {
 		}
 		return null;
 	}
-	
+
 	public void close() throws IOException{
 		this.jasminStream.close();
 	}
