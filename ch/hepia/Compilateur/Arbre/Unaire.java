@@ -11,7 +11,7 @@ public abstract class Unaire extends Expression {
 		}
 
 		public Expression getOperande() {
-			return operand;
+			return operande;
 		}
 
 		public void setOperande(Expression operande) {
@@ -19,7 +19,7 @@ public abstract class Unaire extends Expression {
 		}
 
 		public String toString() {
-			return "(" operateur()+operande+")";
+			return "("+ operateur()+operande+")";
 		} // toString
 
 		public abstract String operateur();
