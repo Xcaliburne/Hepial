@@ -391,7 +391,7 @@ public class JasminGenerateur implements Visiteur {
 		else
 		{
 			try{
-				visiter(e.getTexte());
+				e.getExpr().accepter(this);
 				jasminStream.write("invokestatic Main.print(I)V");
 				jasminStream.newLine();
 			} catch (IOException error) {
@@ -415,7 +415,7 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write("IN" + conditionCounter + ":");
 			jasminStream.newLine();
-			visiter(p.getInstr());
+			p.getInstr().accepter(this);
 			jasminStream.write("iinc " + id + " 1");
 			jasminStream.newLine();
 			jasminStream.write("iload " + id);
@@ -533,5 +533,9 @@ public class JasminGenerateur implements Visiteur {
 			System.err.println(error.getMessage());
 		}
 		return null;
+	}
+	
+	public void close() throws IOException{
+		this.jasminStream.close();
 	}
 }
