@@ -379,7 +379,7 @@ public class JasminGenerateur implements Visiteur {
 		if(e.isString())
 		{
 			try{
-				jasminStream.write("ldc \"" + e.getString() + "\"");
+				jasminStream.write("ldc " + e.getString());
 				jasminStream.newLine();
 				jasminStream.write("invokestatic Main.print(Ljava/lang/String;)V");
 				jasminStream.newLine();
