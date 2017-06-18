@@ -22,7 +22,7 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write(".super java/lang/Object");
 			jasminStream.newLine();
-			jasminStream.write(".method public ()V");
+			jasminStream.write(".method public <init>()V");
 			jasminStream.newLine();
 			jasminStream.write("aload_0");
 			jasminStream.newLine();
@@ -75,6 +75,8 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.write(".limit stack 10 ");
 			jasminStream.newLine();
 			jasminStream.write("new java/util/Scanner");
+			jasminStream.newLine();
+			jasminStream.write("dup");
 			jasminStream.newLine();
 			jasminStream.write("getstatic java/lang/System/in Ljava/io/InputStream;");
 			jasminStream.newLine();
@@ -157,7 +159,7 @@ public class JasminGenerateur implements Visiteur {
 	public Object visiter(Nombre n)
 	{
 		try{
-			jasminStream.write("ldc" + n.getValeur());
+			jasminStream.write("ldc " + n.getValeur());
 			jasminStream.newLine();
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
