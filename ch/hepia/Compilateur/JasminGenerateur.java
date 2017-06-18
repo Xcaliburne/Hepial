@@ -36,7 +36,7 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write(".limit locals 3");
 			jasminStream.newLine();
-			jasminStream.write(".limit stack 5 ");
+			jasminStream.write(".limit stack 5");
 			jasminStream.newLine();
 			jasminStream.write("iload 0 ");
 			jasminStream.newLine();
@@ -54,7 +54,7 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write(".limit locals 3");
 			jasminStream.newLine();
-			jasminStream.write(".limit stack 5 ");
+			jasminStream.write(".limit stack 5");
 			jasminStream.newLine();
 			jasminStream.write("aload 0 ");
 			jasminStream.newLine();
@@ -72,7 +72,7 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write(".limit locals 10");
 			jasminStream.newLine();
-			jasminStream.write(".limit stack 10 ");
+			jasminStream.write(".limit stack 10");
 			jasminStream.newLine();
 			jasminStream.write("new java/util/Scanner");
 			jasminStream.newLine();
@@ -89,6 +89,10 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.write(".end method");
 			jasminStream.newLine();
 			jasminStream.write(".method public static main([Ljava/lang/String;)V");
+			jasminStream.newLine();
+			jasminStream.write(".limit locals 100");
+			jasminStream.newLine();
+			jasminStream.write(".limit stack 100");
 			jasminStream.newLine();
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
@@ -314,18 +318,9 @@ public class JasminGenerateur implements Visiteur {
 
 	public Object visiter(Affectation a)
 	{
-		Idf var = a.getDestination();
-		int id = 0;
-		if(var.getJasminID() == -1)
-		{
-			var.setJasminID(variableCounter);
-			id = variableCounter;
-			variableCounter++;
-		}
-		else
-			id = var.getJasminID();
-
+		int id = a.getDestination().getJasminID();
 		a.getSource().accepter(this);
+
 		try{
 			jasminStream.write("istore " + id);
 			jasminStream.newLine();
@@ -409,16 +404,10 @@ public class JasminGenerateur implements Visiteur {
 
 	public Object visiter(Pour p)
 	{
-		Idf var = p.getIdf();
-		int id = 0;
-		if(var.getJasminID() == -1)
-		{
-			var.setJasminID(variableCounter);
-			id = variableCounter;
-			variableCounter++;
-		}
-		else
-			id = var.getJasminID();
+		int id = p.getIdf().getJasminID();
+		if(id == -1)
+			return null;
+
 		try{
 			jasminStream.write("ldc " + p.getBorneInf());
 			jasminStream.newLine();
@@ -449,12 +438,14 @@ public class JasminGenerateur implements Visiteur {
 	{
 		t.getCondition().accepter(this);
 		try{
+			jasminStream.newLine();
 			jasminStream.write("goto NEXT" + conditionCounter);
 			jasminStream.newLine();
 			jasminStream.write("IN" + conditionCounter + ":");
 			jasminStream.newLine();
 			t.getBoucle().accepter(this);
 			t.getCondition().accepter(this);
+			jasminStream.newLine();
 			jasminStream.write("NEXT" + conditionCounter + ":");
 			jasminStream.newLine();
 		} catch (IOException error) {
