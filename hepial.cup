@@ -41,7 +41,7 @@ axiome ::= programme
 	Bloc b = (Bloc)stack.pop();
 	b.add(list);
 	stack.push(b);
-	
+
 	AnalyseurSemantique.getInstance().visiter(stack);
 	GestionnaireErreur errorhandler = GestionnaireErreur.getInstance();
 	System.out.println(errorhandler.isEmpty());
@@ -101,7 +101,7 @@ declafonct ::= type IDENTIFICATOR:id PARENTHESEOUVERT PARENTHESEFERME decla DEBU
 	TDS.getInstance().add(id, new Symbole(lastType, idright));
   	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 :}
-             
+
 ;
 
 lident ::= IDENTIFICATOR:id
@@ -149,7 +149,7 @@ corps ::= corps instr
         |
 {:
 	stack.push(new Linstr(0));
-:}        
+:}
 ;
 
 instr ::= affectation
@@ -171,7 +171,10 @@ ecrire ::= ECRIRE expr POINTVIRGULE
 	Expression expr = (Expression)stack.pop();
 	stack.push(new Ecrire(expr, 1));
 :}
-         | ECRIRE CONSTANTECHAINE POINTVIRGULE;
+         | ECRIRE CONSTANTECHAINE:str POINTVIRGULE
+{:
+	stack.push(new Ecrire(str, 1));
+:};
 
 affectation ::= acces EGAL expr POINTVIRGULE
 {:

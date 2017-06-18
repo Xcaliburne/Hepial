@@ -1,8 +1,5 @@
 package ch.hepia.Compilateur;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.File;
 
 import ch.hepia.Compilateur.Arbre.*;
 import ch.hepia.Compilateur.TDS.*;
@@ -11,7 +8,6 @@ import ch.hepia.Compilateur.Types.*;
 public class AnalyseurSemantique implements Visiteur{
 
 	private static AnalyseurSemantique instance = null;
-	private BufferedWriter jasminStream = null;
 
     private AnalyseurSemantique() {
 
@@ -28,24 +24,6 @@ public class AnalyseurSemantique implements Visiteur{
     public void visiter(PileArbre stack){
     	PileArbre tmp = new PileArbre();
 
-		jasminStream = new BufferedWriter(new FileWriter(new File("jasmin.j")));
-		jasminStream.write(".class public Main");
-		jasminStream.writeNewLine();
-		jasminStream.write(".super java/lang/Object");
-		jasminStream.writeNewLine();
-		jasminStream.write("aload_0");
-		jasminStream.writeNewLine();
-		jasminStream.write("invokespecial java/lang/Object/<init>()V");
-		jasminStream.writeNewLine();
-		jasminStream.write("return");
-		jasminStream.writeNewLine();
-		jasminStream.write(".end method");
-		jasminStream.writeNewLine();
-		jasminStream.write(".super java/lang/Object");
-		jasminStream.writeNewLine();
-		jasminStream.write(".method public static main([Ljava/lang/String;)V");
-		jasminStream.writeNewLine();
-
     	while(!stack.isEmpty()){
     		ArbreAbstrait arbre = (ArbreAbstrait)stack.pop();
     		arbre.accepter(this);
@@ -54,13 +32,6 @@ public class AnalyseurSemantique implements Visiteur{
     	while(!tmp.isEmpty()){
     		stack.push(tmp.pop());
     	}
-
-		jasminStream.writeNewLine();
-		jasminStream.write("return ;");
-		jasminStream.writeNewLine();
-		jasminStream.write(".end method");
-		jasminStream.writeNewLine();
-		jasminStream.close();
     }
 
 	@Override
@@ -82,9 +53,6 @@ public class AnalyseurSemantique implements Visiteur{
 	@Override
 	public Object visiter(Addition a) {
 		validerBinaire(a);
-
-		jasminStream
-
 		return null;
 	}
 
@@ -180,9 +148,6 @@ public class AnalyseurSemantique implements Visiteur{
 
 	@Override
 	public Object visiter(Ecrire e) {
-		//jasminStream.write("") To be completed : text as string must be pushed onto JVM stack before method call
-		jasminStream.write("invokevirtual java/io/PrintStream/println(Ljava/lang/String;)V");
-		jasminStream.writeNewLine();
 
 		return null;
 	}
