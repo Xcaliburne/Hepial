@@ -1,5 +1,7 @@
 package ch.hepia.Compilateur.Arbre;
 
+import ch.hepia.Compilateur.Visiteur;
+
 public class Lire extends Instruction{
 	private Idf id;
 

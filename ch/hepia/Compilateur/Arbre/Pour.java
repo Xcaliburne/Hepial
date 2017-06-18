@@ -2,6 +2,8 @@ package ch.hepia.Compilateur.Arbre;
 
 import java.util.ArrayList;
 
+import ch.hepia.Compilateur.Visiteur;
+
 public class Pour extends Instruction{
 	
 	private Idf idf;

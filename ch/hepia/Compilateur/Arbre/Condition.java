@@ -1,5 +1,7 @@
 package ch.hepia.Compilateur.Arbre;
 
+import ch.hepia.Compilateur.Visiteur;
+
 public class Condition extends Instruction{
 	
 	private Expression condition;

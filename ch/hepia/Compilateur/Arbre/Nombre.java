@@ -1,5 +1,6 @@
 package ch.hepia.Compilateur.Arbre;
 
+import ch.hepia.Compilateur.Visiteur;
 import ch.hepia.Compilateur.Types.*;
 
 public class Nombre extends Expression {

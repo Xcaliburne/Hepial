@@ -1,5 +1,7 @@
 package ch.hepia.Compilateur.Arbre;
 
+import ch.hepia.Compilateur.Visiteur;
+
 public class Tantque extends Instruction{
 	
 	private Expression condition;

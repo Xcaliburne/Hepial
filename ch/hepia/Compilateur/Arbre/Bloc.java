@@ -3,6 +3,8 @@ package ch.hepia.Compilateur.Arbre;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.hepia.Compilateur.Visiteur;
+
 public class Bloc extends Instruction{
 
 	private ArrayList<Instruction> inst_list;
