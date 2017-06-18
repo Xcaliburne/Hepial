@@ -1,12 +1,12 @@
 package ch.hepia.Compilateur;
 
-
+import java.util.ArrayList;
 import ch.hepia.Compilateur.Arbre.*;
 import ch.hepia.Compilateur.TDS.*;
 import ch.hepia.Compilateur.Types.*;
 
 public class AnalyseurSemantique implements Visiteur{
-
+	private ArrayList<String> noms = null;
 	private static AnalyseurSemantique instance = null;
 
 	private AnalyseurSemantique() {
@@ -17,6 +17,7 @@ public class AnalyseurSemantique implements Visiteur{
 		if (instance == null)
 		{
 			instance = new AnalyseurSemantique();
+			instance.noms = new ArrayList<>();
 		}
 		return instance;
 	}
@@ -141,6 +142,9 @@ public class AnalyseurSemantique implements Visiteur{
 		Symbole s = SymbolTable.getInstance().identify(i.getName());
 		if (s != null){
 			i.setType(s.getType());
+			if(!noms.contains(i.getName()))
+				noms.add(i.getName());
+			i.setJasminID(noms.indexOf(i.getName()));
 		}
 		return null;
 	}
