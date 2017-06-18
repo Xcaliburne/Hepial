@@ -48,7 +48,13 @@ axiome ::= programme
 	if (!errorhandler.isEmpty()){
 		errorhandler.printErrors();
 		System.exit(0);
+	}else{
+		System.out.println("debut de la construction du code");
+		JasminGenerateur generateur = new JasminGenerateur("output.bin");
+		generateur.generate(stack);
+		generateur.close();
 	}
+
 :}
 ;
 
