@@ -3,9 +3,10 @@ package ch.hepia.Compilateur;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.File;
+
 import ch.hepia.Compilateur.Arbre.*;
 import ch.hepia.Compilateur.TDS.*;
-import ch.hepia.Compilateur.Types.TypeBooleen;
+import ch.hepia.Compilateur.Types.*;
 
 public class AnalyseurSemantique implements Visiteur{
 

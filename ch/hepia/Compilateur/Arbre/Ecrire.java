@@ -1,5 +1,7 @@
 package ch.hepia.Compilateur.Arbre;
 
+import ch.hepia.Compilateur.Visiteur;
+
 public class Ecrire extends Instruction{
 	private Expression texte;
 	public Ecrire(Expression t, int lig) {
