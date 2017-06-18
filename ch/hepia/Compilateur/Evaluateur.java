@@ -209,4 +209,16 @@ public class Evaluateur implements Visiteur{
 		// TODO Auto-generated method stub
 		return b.getValeur();
 	}
+
+	@Override
+	public Object visiter(Tilde t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visiter(Non n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

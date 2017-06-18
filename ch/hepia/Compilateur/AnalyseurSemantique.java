@@ -229,4 +229,16 @@ public class AnalyseurSemantique implements Visiteur{
 			GestionnaireErreur.getInstance().add("les type ne correspondent pas");
 		}
 	}
+
+	@Override
+	public Object visiter(Tilde t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object visiter(Non n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
