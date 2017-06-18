@@ -353,8 +353,8 @@ public class JasminGenerateur implements Visiteur {
 	public Object visiter(Condition c)
 	{
 		c.getCondition().accepter(this);
-		jasminStream.newLine();
 		try{
+			jasminStream.newLine();
 			if(c.getCondition() instanceof Idf)
 			{
 				jasminStream.write("ifne IN" + conditionCounter);
