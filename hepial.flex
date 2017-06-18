@@ -15,6 +15,10 @@ import java.lang.String;
 	{
     	System.out.println("error line " + yyline + " column " + yycolumn + " " + yytext());
 	}
+	
+	public int getLine(){
+		return yyline;
+	}
 %}
 
 /* models */

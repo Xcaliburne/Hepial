@@ -14,6 +14,7 @@ parser code {:
 	public Type lastType;
 	public String lastId;
 	public PileArbre stack = new PileArbre();
+	public Lexer lexer = (Lexer)getScanner();
 :}
 
 terminal DEBUTPRG, FINPRG, PROG, POINTVIRGULE, VIRGULE, CONSTANTE, EGAL, PARENTHESEOUVERT, PARENTHESEFERME, DEBUTFONC, FINFONC;
@@ -44,7 +45,6 @@ axiome ::= programme
 
 	AnalyseurSemantique.getInstance().visiter(stack);
 	GestionnaireErreur errorhandler = GestionnaireErreur.getInstance();
-	System.out.println(errorhandler.isEmpty());
 	if (!errorhandler.isEmpty()){
 		errorhandler.printErrors();
 		System.exit(0);
@@ -80,8 +80,11 @@ decla ::= declavar
 declavar ::= type:type lident:id_list POINTVIRGULE
 {:
   for (String id : id_list) {
-		TDS.getInstance().add(id, new Symbole(lastType, id_listright));
-    System.out.println(id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+		TDS.getInstance().add(id, new Symbole(lastType, lexer.getLine()));
+		Bloc bloc = (Bloc) stack.pop();
+		bloc.add(new Affectation(new Nombre(0, lexer.getLine()), new Idf(id, lexer.getLine()), lexer.getLine()));
+		stack.push(bloc);
+    	System.out.println("line " + lexer.getLine()+ ":" + id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 	}
 :}
 ;
@@ -89,23 +92,23 @@ declavar ::= type:type lident:id_list POINTVIRGULE
 declaconst ::= CONSTANTE type IDENTIFICATOR:id EGAL expr POINTVIRGULE
 {:
 	Expression expr = (Expression)stack.pop();
-	TDS.getInstance().add(id, new Symbole(lastType, 1));
+	TDS.getInstance().add(id, new Symbole(lastType, lexer.getLine()));
 	Bloc bloc = (Bloc) stack.pop();
-	bloc.add(new Affectation(expr, new Idf(id, 1), 1));
+	bloc.add(new Affectation(expr, new Idf(id, lexer.getLine()), lexer.getLine()));
 	stack.push(bloc);
-	System.out.println(id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+	System.out.println("line " + lexer.getLine()+ ":" + id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 :}
 ;
 
 declafonct ::= type IDENTIFICATOR:id PARENTHESEOUVERT PARENTHESEFERME decla DEBUTFONC corps FINFONC
 {:
-	TDS.getInstance().add(id, new Symbole(lastType, idright));
-	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+	TDS.getInstance().add(id, new Symbole(lastType, lexer.getLine()));
+	System.out.println("line " + lexer.getLine() + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 :}
              | type IDENTIFICATOR:id PARENTHESEOUVERT param PARENTHESEFERME decla DEBUTFONC corps FINFONC
 {:
-	TDS.getInstance().add(id, new Symbole(lastType, idright));
-  	System.out.println("line " + idright + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
+	TDS.getInstance().add(id, new Symbole(lastType, lexer.getLine()));
+  	System.out.println("line " + lexer.getLine() + " " +id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 :}
 
 ;
@@ -168,25 +171,25 @@ instr ::= affectation
 
 lire ::= LIRE IDENTIFICATOR:id POINTVIRGULE
 {:
-	stack.push(new Lire(new Idf(id, 1), 1));
+	stack.push(new Lire(new Idf(id, lexer.getLine()), lexer.getLine()));
 :}
 ;
 
 ecrire ::= ECRIRE expr POINTVIRGULE
 {:
 	Expression expr = (Expression)stack.pop();
-	stack.push(new Ecrire(expr, 1));
+	stack.push(new Ecrire(expr, lexer.getLine()));
 :}
          | ECRIRE CONSTANTECHAINE:str POINTVIRGULE
 {:
-	stack.push(new Ecrire(str, 1));
+	stack.push(new Ecrire(str, lexer.getLine()));
 :};
 
 affectation ::= acces EGAL expr POINTVIRGULE
 {:
 	Expression source = (Expression) (stack.pop());
 	Idf dest = (Idf) (stack.pop());
-	stack.push(new Affectation(source, dest, 1));
+	stack.push(new Affectation(source, dest, lexer.getLine()));
 :}
 ;
 
@@ -197,7 +200,7 @@ condition ::= SI expr ALORS corps SINON corps FINSI
 	Linstr sinon = (Linstr) stack.pop();
 	Linstr alors = (Linstr) stack.pop();
 	Expression cond = (Expression) stack.pop();
-	stack.push(new Condition(cond, alors, sinon, 1));
+	stack.push(new Condition(cond, alors, sinon, lexer.getLine()));
 :}
 ;
 
@@ -205,7 +208,7 @@ tantque ::= TANTQUE expr FAIRE corps FINTANTQUE
 {:
 	Linstr boucle = (Linstr) stack.pop();
 	Expression cond = (Expression) stack.pop();
-	stack.push(new Tantque(cond, boucle, 1));
+	stack.push(new Tantque(cond, boucle, lexer.getLine()));
 :}
 ;
 
@@ -215,7 +218,7 @@ pour ::= POUR IDENTIFICATOR ALLANTDE expr A expr FAIRE corps FINPOUR
 	Expression BorneSup = (Expression) stack.pop();
 	Expression BorneInf = (Expression) stack.pop();
 	Idf ident = (Idf) stack.pop();
-	stack.push(new Pour(ident, BorneInf, BorneSup, boucle, 1));
+	stack.push(new Pour(ident, BorneInf, BorneSup, boucle, lexer.getLine()));
 :}
 ;
 
@@ -240,7 +243,7 @@ expr ::= expr opebin expr
 
 acces ::= IDENTIFICATOR:id
 {:
-	stack.push(new Idf(id, 1));
+	stack.push(new Idf(id, lexer.getLine()));
 :}
         | IDENTIFICATOR index;
 
@@ -249,26 +252,26 @@ index ::= CROCHETOUVERT expr CROCHETFERME
 
 operande ::= acces
           |  appelfct
-          |  CONSTANTEENT:constante {: stack.push(new Nombre(constante, 1)); :}
-          |  VRAI {: stack.push(new Booleen(true, 1)); :}
-          |  FAUX {: stack.push(new Booleen(false, 1)); :};
+          |  CONSTANTEENT:constante {: stack.push(new Nombre(constante, lexer.getLine())); :}
+          |  VRAI {: stack.push(new Booleen(true, lexer.getLine())); :}
+          |  FAUX {: stack.push(new Booleen(false, lexer.getLine())); :};
 
-opebin ::= PLUS {: stack.push(new Addition(1)); :}
-        |  MOINS {: stack.push(new Soustraction(1)); :}
-        |  DIVISE {: stack.push(new Division(1)); :}
-        |  FOIS {: stack.push(new Produit(1)); :}
-        |  EGALITE {: stack.push(new Egal(1)); :}
-        |  DIFFERENCE {: stack.push(new Different(1)); :}
-        |  PLUSPETIT {:	stack.push(new Inferieur(1)); :}
-        |  PLUSGRAND {: stack.push(new Superieur(1)); :}
-        |  PLUSGRANDEGAL {:	stack.push(new SupEgal(1)); :}
-        |  PLUSPETITEGAL {: stack.push(new InfEgal(1)); :}
-        |  ET {: stack.push(new Et(1)); :}
-        |  OU {: stack.push(new Ou(1)); :}
+opebin ::= PLUS {: stack.push(new Addition(lexer.getLine())); :}
+        |  MOINS {: stack.push(new Soustraction(lexer.getLine())); :}
+        |  DIVISE {: stack.push(new Division(lexer.getLine())); :}
+        |  FOIS {: stack.push(new Produit(lexer.getLine())); :}
+        |  EGALITE {: stack.push(new Egal(lexer.getLine())); :}
+        |  DIFFERENCE {: stack.push(new Different(lexer.getLine())); :}
+        |  PLUSPETIT {:	stack.push(new Inferieur(lexer.getLine())); :}
+        |  PLUSGRAND {: stack.push(new Superieur(lexer.getLine())); :}
+        |  PLUSGRANDEGAL {:	stack.push(new SupEgal(lexer.getLine())); :}
+        |  PLUSPETITEGAL {: stack.push(new InfEgal(lexer.getLine())); :}
+        |  ET {: stack.push(new Et(lexer.getLine())); :}
+        |  OU {: stack.push(new Ou(lexer.getLine())); :}
 ;
 
-opeun ::= TILDE {: stack.push(new Non(1)); :}
-        | NON {: stack.push(new Tilde(1)); :}
+opeun ::= TILDE {: stack.push(new Non(lexer.getLine())); :}
+        | NON {: stack.push(new Tilde(lexer.getLine())); :}
         ;
 
 appelfct ::= IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME

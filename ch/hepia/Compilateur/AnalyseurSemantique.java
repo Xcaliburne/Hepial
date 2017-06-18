@@ -8,7 +8,12 @@ import ch.hepia.Compilateur.Types.*;
 public class AnalyseurSemantique implements Visiteur{
 	private ArrayList<String> noms = null;
 	private static AnalyseurSemantique instance = null;
+	private static String ncf = "Source et destination non conformes";
+	private static String eb = "Expression booleenne attendue";
+	private static String nd = "Identificateur non declare";
+	private static String ti = "Typage incorrect";
 
+	
 	private AnalyseurSemantique() {
 
 	}
@@ -122,12 +127,12 @@ public class AnalyseurSemantique implements Visiteur{
 		Type typeDest = a.getDestination().getType();
 		Object v = a.getSource().accepter(Evaluateur.getInstance());
 		if (v != null){
-			a.setSource(new Nombre( (Integer)v, 1 ) );
+			a.setSource(new Nombre( (Integer)v, a.getSource().getLigne()) );
 		}
 		a.getSource().accepter(this);
 		Type typeSource = a.getSource().getType();
 		if (! (typeSource.estConforme(typeDest)) ){
-			//		erreur(a, ncf);
+			GestionnaireErreur.getInstance().add(a.getLigne(), ncf);
 		}else{
 			a.setType(typeDest);
 		}
@@ -143,28 +148,23 @@ public class AnalyseurSemantique implements Visiteur{
 			if(!noms.contains(i.getName()))
 				noms.add(i.getName());
 			i.setJasminID(noms.indexOf(i.getName()));
+		}else{
+			GestionnaireErreur.getInstance().add(i.getLigne(), nd);
 		}
 		return null;
 	}
 
 	@Override
 	public Object visiter(Condition c) {
-		//		c.getCondition().accepter(this);
-		//		if (!c.getCondition().getType().estConforme(TypeBooleen.getInstance())){
-		//			GestionnaireErreur.getInstance().add("la condition n'est pas booleene");
-		//		}
-		//		c.getAlors().accepter(this);
-		//		c.getSinon().accepter(this);
-		//		return null;
 		Object v = c.getCondition().accepter(Evaluateur.getInstance());
 		if (v != null)
 			c.setCondition((Booleen)v);
 		else {
 			c.getCondition().accepter(this);
 			if (c.getCondition().getType() != TypeBooleen.getInstance()){
-//				erreur(c, eb);
+				GestionnaireErreur.getInstance().add(c.getLigne(), eb);
 			}
-		} // if
+		}
 		c.getAlors().accepter(this);
 		c.getSinon().accepter(this);
 		return null;
@@ -184,7 +184,6 @@ public class AnalyseurSemantique implements Visiteur{
 		p.getBorneInf().accepter(this);
 		p.getBorneSup().accepter(this);
 		p.getInstr().accepter(this);
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -192,7 +191,6 @@ public class AnalyseurSemantique implements Visiteur{
 	public Object visiter(Tantque t) {
 		t.getCondition().accepter(this);
 		t.getBoucle().accepter(this);
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -236,14 +234,14 @@ public class AnalyseurSemantique implements Visiteur{
 		b.getOperandeGauche().accepter(this);
 		b.getOperandeDroite().accepter(this);
 		if (!b.getOperandeDroite().getType().estConforme(b.getOperandeGauche().getType())){
-			GestionnaireErreur.getInstance().add("les type ne correspondent pas");
+			GestionnaireErreur.getInstance().add(b.getLigne(), ncf);
 		}
 	}
 	
 	private void validerUnaire(Unaire u){
 		u.getOperande().accepter(this);
 		if (!u.getOperande().getType().estConforme(u.getType())){
-			GestionnaireErreur.getInstance().add("les type ne correspondent pas");
+			GestionnaireErreur.getInstance().add(u.getLigne(), ncf);
 		}
 	}
 }

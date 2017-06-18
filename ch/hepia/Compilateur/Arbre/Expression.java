@@ -2,11 +2,21 @@ package ch.hepia.Compilateur.Arbre;
 import ch.hepia.Compilateur.Types.*;
 
 public abstract class Expression implements ArbreAbstrait {
-   	private int lig;
+   	private int ligne;
 
    	public Expression(int lig) {
-   		this.lig = lig;
+   		this.ligne = ligne;
    	}
    	
-   	public abstract Type getType();
+   	public int getLigne() {
+		return ligne;
+	}
+
+	public void setLigne(int ligne) {
+		this.ligne = ligne;
+	}
+
+
+
+	public abstract Type getType();
 }

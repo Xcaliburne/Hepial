@@ -43,16 +43,16 @@ public class SymbolTable {
 				return dictionnaries.get(current).get(name);
 			}
 		}
-		GestionnaireErreur.getInstance().add(name+": Variable non-declaree");
 		return null;
 	}
 
 	public void add(String name, Symbole s)
 	{
-		if(dictionnaries.get(currentBlockCount-1).containsKey(name))
-			GestionnaireErreur.getInstance().add("Variable already declared: " + name);
-		else
+		if(dictionnaries.get(currentBlockCount-1).containsKey(name)){
+			GestionnaireErreur.getInstance().add(s.getLine(), "variable deja declaree");
+		}else{
 			dictionnaries.get(currentBlockCount-1).put(name, s);
+		}
 	}
 
 	public static SymbolTable getInstance()
