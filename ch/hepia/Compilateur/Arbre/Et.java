@@ -5,7 +5,7 @@ import ch.hepia.Compilateur.Types.Type;
 import ch.hepia.Compilateur.Types.TypeBooleen;
 import ch.hepia.Compilateur.Types.TypeEntier;
 
-public class Et extends Arithmetique{
+public class Et extends Binaire{
 
 	public Et(int lig) {
 		super(null, null, lig);

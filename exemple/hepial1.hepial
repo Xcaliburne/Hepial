@@ -1,7 +1,7 @@
 programme hepial1
 
 entier x, z, test;
-constante entier t = 1;
+constante entier t = 1 + 3;
 
 
 debutprg

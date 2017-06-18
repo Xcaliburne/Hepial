@@ -1,8 +1,10 @@
 package ch.hepia.Compilateur.Arbre;
 
+import ch.hepia.Compilateur.Types.*;
+
 public abstract class Binaire extends Expression {
 		protected Expression operandeGauche; 
-		protected Expression operandeDroite; 
+		protected Expression operandeDroite;
 		
 		public Binaire (Expression g, Expression d, int lig) {
 			super(lig);
@@ -31,4 +33,5 @@ public abstract class Binaire extends Expression {
 		} // toString
 		
 		public abstract String operateur();
+
 }

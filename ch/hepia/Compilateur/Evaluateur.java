@@ -2,43 +2,22 @@ package ch.hepia.Compilateur;
 
 import java.io.BufferedWriter;
 
-import ch.hepia.Compilateur.Arbre.Addition;
-import ch.hepia.Compilateur.Arbre.Affectation;
-import ch.hepia.Compilateur.Arbre.Bloc;
-import ch.hepia.Compilateur.Arbre.Condition;
-import ch.hepia.Compilateur.Arbre.Different;
-import ch.hepia.Compilateur.Arbre.Division;
-import ch.hepia.Compilateur.Arbre.Ecrire;
-import ch.hepia.Compilateur.Arbre.Egal;
-import ch.hepia.Compilateur.Arbre.Et;
-import ch.hepia.Compilateur.Arbre.Idf;
-import ch.hepia.Compilateur.Arbre.InfEgal;
-import ch.hepia.Compilateur.Arbre.Inferieur;
-import ch.hepia.Compilateur.Arbre.Linstr;
-import ch.hepia.Compilateur.Arbre.Lire;
-import ch.hepia.Compilateur.Arbre.Nombre;
-import ch.hepia.Compilateur.Arbre.Ou;
-import ch.hepia.Compilateur.Arbre.Pour;
-import ch.hepia.Compilateur.Arbre.Produit;
-import ch.hepia.Compilateur.Arbre.Soustraction;
-import ch.hepia.Compilateur.Arbre.SupEgal;
-import ch.hepia.Compilateur.Arbre.Superieur;
-import ch.hepia.Compilateur.Arbre.Tantque;
+import ch.hepia.Compilateur.Arbre.*;
 
 public class Evaluateur implements Visiteur{
 	private static Evaluateur instance = null;
 
-    private Evaluateur() {
+	private Evaluateur() {
 
-    }
+	}
 
-    public static Evaluateur getInstance() {
-        if (instance == null)
-        {
-            instance = new Evaluateur();
-        }
-        return instance;
-    }
+	public static Evaluateur getInstance() {
+		if (instance == null)
+		{
+			instance = new Evaluateur();
+		}
+		return instance;
+	}
 
 	@Override
 	public Object visiter(Bloc b) {
@@ -84,8 +63,7 @@ public class Evaluateur implements Visiteur{
 
 	@Override
 	public Object visiter(Nombre n) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Integer(n.getValeur());
 	}
 
 	@Override
@@ -192,13 +170,31 @@ public class Evaluateur implements Visiteur{
 
 	@Override
 	public Object visiter(Ou ou) {
-		// TODO Auto-generated method stub
+		Object valG = ou.getOperandeGauche().accepter(this);
+		Object valD = ou.getOperandeDroite().accepter(this);
+		if (valG != null) {
+			int valintG = ((Integer)valG).intValue();
+			return (valintG == 1)?valG:null;
+		}
+		if (valD != null) {
+			int valintD = ((Integer)valD).intValue();
+			return (valintD == 1)?valD:null;
+		}
 		return null;
 	}
 
 	@Override
 	public Object visiter(Et et) {
-		// TODO Auto-generated method stub
+		Object valG = et.getOperandeGauche().accepter(this);
+		if (valG != null) {
+			int valintG = ((Integer)valG).intValue();
+			return (valintG == 0)?valG:null;
+		}
+		Object valD = et.getOperandeDroite().accepter(this);
+		if (valD != null) {
+			int valintD = ((Integer)valD).intValue();
+			return (valintD == 0)?valD:null;
+		}
 		return null;
 	}
 
@@ -206,5 +202,11 @@ public class Evaluateur implements Visiteur{
 	public Object visiter(Lire l) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Object visiter(Booleen b) {
+		// TODO Auto-generated method stub
+		return b.getValeur();
 	}
 }

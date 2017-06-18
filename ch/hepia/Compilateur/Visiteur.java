@@ -2,7 +2,9 @@ package ch.hepia.Compilateur;
 
 import ch.hepia.Compilateur.Arbre.Addition;
 import ch.hepia.Compilateur.Arbre.Affectation;
+import ch.hepia.Compilateur.Arbre.Arithmetique;
 import ch.hepia.Compilateur.Arbre.Bloc;
+import ch.hepia.Compilateur.Arbre.Booleen;
 import ch.hepia.Compilateur.Arbre.Condition;
 import ch.hepia.Compilateur.Arbre.Different;
 import ch.hepia.Compilateur.Arbre.Division;
@@ -18,6 +20,7 @@ import ch.hepia.Compilateur.Arbre.Nombre;
 import ch.hepia.Compilateur.Arbre.Ou;
 import ch.hepia.Compilateur.Arbre.Pour;
 import ch.hepia.Compilateur.Arbre.Produit;
+import ch.hepia.Compilateur.Arbre.Relation;
 import ch.hepia.Compilateur.Arbre.Soustraction;
 import ch.hepia.Compilateur.Arbre.SupEgal;
 import ch.hepia.Compilateur.Arbre.Superieur;
@@ -31,6 +34,7 @@ public interface Visiteur {
 	    Object visiter(Addition a);
 	    Object visiter(Soustraction s);
 	    Object visiter(Nombre n);
+	    Object visiter(Booleen b);
 	    Object visiter(Produit p);
 	    Object visiter(Division d);
 

@@ -3,16 +3,16 @@ package ch.hepia.Compilateur.Arbre;
 import ch.hepia.Compilateur.Visiteur;
 import ch.hepia.Compilateur.Types.*;
 
-public class Nombre extends Expression {
-	private int valeur;
-	private Type type = TypeEntier.getInstance();
+public class Booleen extends Expression {
+	private Boolean valeur;
+	private Type type = TypeBooleen.getInstance();
 	
-	public Nombre (int val, int lig) {
+	public Booleen (Boolean val, int lig) {
 		super(lig);
 		this.valeur = val;
 	}
 
-	public int getValeur() {
+	public Boolean getValeur() {
 		return valeur;
 	}
 	

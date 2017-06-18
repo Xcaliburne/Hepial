@@ -3,13 +3,13 @@ package ch.hepia.Compilateur.Arbre;
 import ch.hepia.Compilateur.Visiteur;
 
 public class Ecrire extends Instruction{
-	private Expression texte;
+	private Expression expr;
 	private String constante;
 	private boolean isString = false;
 
 	public Ecrire(Expression t, int lig) {
         super(lig);
-        this.texte = t;
+        this.expr = t;
 		isString = false;
     }
 
@@ -19,12 +19,12 @@ public class Ecrire extends Instruction{
 		isString = true;
     }
 
-    public Expression getTexte() {
-        return this.texte;
+    public Expression getExpr() {
+        return this.expr;
     }
 
-    public void setTexte(Expression t) {
-        this.texte = t;
+    public void setExpr(Expression t) {
+        this.expr = t;
     }
 
 	public String getString() {

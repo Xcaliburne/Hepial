@@ -237,12 +237,9 @@ index ::= CROCHETOUVERT expr CROCHETFERME
 
 operande ::= acces
           |  appelfct
-          |  CONSTANTEENT:constante
-{:
-	stack.push(new Nombre(constante, 1));
-:}
-          |  VRAI
-          |  FAUX;
+          |  CONSTANTEENT:constante {: stack.push(new Nombre(constante, 1)); :}
+          |  VRAI {: stack.push(new Booleen(true, 1)); :}
+          |  FAUX {: stack.push(new Booleen(false, 1)); :};
 
 opebin ::= PLUS {: stack.push(new Addition(1)); :}
         |  MOINS {: stack.push(new Soustraction(1)); :}
