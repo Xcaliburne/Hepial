@@ -50,7 +50,7 @@ axiome ::= programme
 		System.exit(0);
 	}else{
 		System.out.println("debut de la construction du code");
-		JasminGenerateur generateur = new JasminGenerateur("output.bin");
+		JasminGenerateur generateur = new JasminGenerateur("output.j");
 		generateur.generate(stack);
 		generateur.close();
 	}
@@ -229,6 +229,12 @@ expr ::= expr opebin expr
 	stack.push(opebin);
 :}
       |  opeun expr
+{:
+	Expression expr = (Expression)stack.pop();
+	Unaire opeun = (Unaire)stack.pop();
+	opeun.setOperande(expr);
+	stack.push(opeun);
+:}
       |  PARENTHESEOUVERT expr PARENTHESEFERME
       |  operande;
 
@@ -261,8 +267,8 @@ opebin ::= PLUS {: stack.push(new Addition(1)); :}
         |  OU {: stack.push(new Ou(1)); :}
 ;
 
-opeun ::= TILDE {: //stack.push(new Et(1)); :}
-        | NON {: //stack.push(new Ou(1)); :}
+opeun ::= TILDE {: stack.push(new Non(1)); :}
+        | NON {: stack.push(new Tilde(1)); :}
         ;
 
 appelfct ::= IDENTIFICATOR PARENTHESEOUVERT PARENTHESEFERME

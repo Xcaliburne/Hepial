@@ -18,6 +18,8 @@ class: sym.java parser.java Lexer.java
 
 run:
 	java -classpath java-cup-11b.jar:. Compilateur exemple/hepial1.hepial
+	java -jar jasmin-2.4/jasmin.jar output.j
+	java Main
 
 runError:
 	java -classpath java-cup-11b.jar:. Compilateur exempleErreur

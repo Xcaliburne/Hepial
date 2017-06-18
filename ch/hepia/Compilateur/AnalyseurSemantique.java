@@ -38,7 +38,6 @@ public class AnalyseurSemantique implements Visiteur{
 	@Override
 	public Object visiter(Bloc b) {
 		for (Instruction instr : b.getInst_list()) {
-			System.out.println(instr.getClass().getSimpleName());
 			instr.accepter(this);
 		}
 		return null;
@@ -47,7 +46,6 @@ public class AnalyseurSemantique implements Visiteur{
 	@Override
 	public Object visiter(Linstr list) {
 		for (Instruction instr : list.getInst_list()) {
-			System.out.println(instr.getClass().getSimpleName());
 			instr.accepter(this);
 		}
 		return null;
@@ -222,6 +220,18 @@ public class AnalyseurSemantique implements Visiteur{
 		return null;
 	}
 
+	@Override
+	public Object visiter(Tilde t) {
+		validerUnaire(t);
+		return null;
+	}
+
+	@Override
+	public Object visiter(Non n) {
+		validerUnaire(n);
+		return null;
+	}
+	
 	private void validerBinaire(Binaire b){
 		b.getOperandeGauche().accepter(this);
 		b.getOperandeDroite().accepter(this);
@@ -229,16 +239,11 @@ public class AnalyseurSemantique implements Visiteur{
 			GestionnaireErreur.getInstance().add("les type ne correspondent pas");
 		}
 	}
-
-	@Override
-	public Object visiter(Tilde t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object visiter(Non n) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	private void validerUnaire(Unaire u){
+		u.getOperande().accepter(this);
+		if (!u.getOperande().getType().estConforme(u.getType())){
+			GestionnaireErreur.getInstance().add("les type ne correspondent pas");
+		}
 	}
 }
