@@ -493,16 +493,7 @@ public class JasminGenerateur implements Visiteur {
 
 	public Object visiter(Lire l)
 	{
-		Idf var = l.getIdf();
-		int id = 0;
-		if(var.getJasminID() == -1)
-		{
-			var.setJasminID(variableCounter);
-			id = variableCounter;
-			variableCounter++;
-		}
-		else
-			id = var.getJasminID();
+		int id = var.getJasminID();
 		try{
 			jasminStream.write("invokestatic Main.read()I");
 			jasminStream.newLine();
