@@ -138,7 +138,8 @@ typebase ::= ENTIER
 :}
 | BOOLEEN
 {:
-  lastType = TypeBooleen.getInstance();
+	System.out.println("lastType is boolean");
+	lastType = TypeBooleen.getInstance();
 :}
 ;
 
