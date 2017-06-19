@@ -451,6 +451,8 @@ public class JasminGenerateur implements Visiteur {
 			t.getBoucle().accepter(this);
 			t.getCondition().accepter(this);
 			jasminStream.newLine();
+			jasminStream.write("NOTIN" + nestedCounter.peek() + ":");
+			jasminStream.newLine();
 			jasminStream.write("NEXT" + nestedCounter.pop() + ":");
 			jasminStream.newLine();
 		} catch (IOException error) {
@@ -479,7 +481,6 @@ public class JasminGenerateur implements Visiteur {
 		andCounter++;
 		et.getOperandeGauche().accepter(this);
 		try{
-			jasminStream.newLine();
 			jasminStream.write("n" + andCounter);
 			jasminStream.newLine();
 			jasminStream.write("goto NOTIN" + nestedCounter.peek());
