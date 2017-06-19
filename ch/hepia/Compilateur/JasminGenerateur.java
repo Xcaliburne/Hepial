@@ -350,9 +350,9 @@ public class JasminGenerateur implements Visiteur {
 
 	public Object visiter(Condition c)
 	{
-		c.getCondition().accepter(this);
 		nestedCounter.push(conditionCounter + 1);
 		conditionCounter++;
+		c.getCondition().accepter(this);
 		try{
 			jasminStream.newLine();
 			if(c.getCondition() instanceof Idf)
@@ -440,9 +440,9 @@ public class JasminGenerateur implements Visiteur {
 
 	public Object visiter(Tantque t)
 	{
-		t.getCondition().accepter(this);
 		nestedCounter.push(conditionCounter + 1);
 		conditionCounter++;
+		t.getCondition().accepter(this);
 		try{
 			jasminStream.newLine();
 			jasminStream.write("goto NEXT" + nestedCounter.peek());
