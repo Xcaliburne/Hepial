@@ -77,12 +77,16 @@ decla ::= declavar
         | declafonct decla
 ;
 
-declavar ::= type:type lident:id_list POINTVIRGULE
+declavar ::= type lident:id_list POINTVIRGULE
 {:
   for (String id : id_list) {
 		TDS.getInstance().add(id, new Symbole(lastType, lexer.getLine()));
 		Bloc bloc = (Bloc) stack.pop();
-		bloc.add(new Affectation(new Nombre(0, lexer.getLine()), new Idf(id, lexer.getLine()), lexer.getLine()));
+		if (lastType == TypeEntier.getInstance()){
+			bloc.add(new Affectation(new Nombre(0, lexer.getLine()), new Idf(id, lexer.getLine()), lexer.getLine()));
+		}else{
+			bloc.add(new Affectation(new Booleen(false, lexer.getLine()), new Idf(id, lexer.getLine()), lexer.getLine()));
+		}
 		stack.push(bloc);
     	System.out.println("line " + lexer.getLine()+ ":" + id+": "+lastType.toString() + " => " + TDS.getInstance().getCurrentBlock());
 	}
@@ -171,7 +175,8 @@ instr ::= affectation
 
 lire ::= LIRE IDENTIFICATOR:id POINTVIRGULE
 {:
-	stack.push(new Lire(new Idf(id, lexer.getLine()), lexer.getLine()));
+	Idf idf = new Idf(id, lexer.getLine());
+	stack.push(new Lire(idf, lexer.getLine()));
 :}
 ;
 
@@ -212,12 +217,12 @@ tantque ::= TANTQUE expr FAIRE corps FINTANTQUE
 :}
 ;
 
-pour ::= POUR IDENTIFICATOR ALLANTDE expr A expr FAIRE corps FINPOUR
+pour ::= POUR IDENTIFICATOR:id ALLANTDE expr A expr FAIRE corps FINPOUR
 {:
 	Linstr boucle = (Linstr) stack.pop();
 	Expression BorneSup = (Expression) stack.pop();
 	Expression BorneInf = (Expression) stack.pop();
-	Idf ident = (Idf) stack.pop();
+	Idf ident = new Idf(id, lexer.getLine());
 	stack.push(new Pour(ident, BorneInf, BorneSup, boucle, lexer.getLine()));
 :}
 ;

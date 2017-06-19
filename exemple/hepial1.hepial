@@ -1,10 +1,18 @@
 programme hepial1
 
-entier x;
+entier x,y;
 debutprg
-	si x==0 alors
-		ecrire "x=0";
+	lire x;
+	lire y;
+	ecrire x;
+	ecrire y;
+	si x==y alors
+		ecrire "x==y";
 	sinon
-		ecrire "x<>0";
+		si x<y alors
+			ecrire "x<y";
+		sinon
+			ecrire "x>y";
+		finsi
 	finsi
 finprg
