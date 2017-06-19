@@ -42,7 +42,7 @@ axiome ::= programme
 	Bloc b = (Bloc)stack.pop();
 	b.add(list);
 	stack.push(b);
-
+	System.out.println("debut de l'analyse semantique");
 	AnalyseurSemantique.getInstance().visiter(stack);
 	GestionnaireErreur errorhandler = GestionnaireErreur.getInstance();
 	if (!errorhandler.isEmpty()){
@@ -119,14 +119,14 @@ declafonct ::= type IDENTIFICATOR:id PARENTHESEOUVERT PARENTHESEFERME decla DEBU
 
 lident ::= IDENTIFICATOR:id
 {:
-  ArrayList<String> id_list = new ArrayList<String>();
-  id_list.add(id);
-  RESULT = id_list;
+	ArrayList<String> id_list = new ArrayList<String>();
+	id_list.add(id);
+	RESULT = id_list;
 :}
           | lident:id_list VIRGULE IDENTIFICATOR:id
 {:
-  id_list.add(id);
-  RESULT = id_list;
+	id_list.add(id);
+	RESULT = id_list;
 :}
 ;
 
@@ -136,9 +136,8 @@ typebase ::= ENTIER
 {:
   lastType = TypeEntier.getInstance();
 :}
-| BOOLEEN
+	| BOOLEEN
 {:
-	System.out.println("lastType is boolean");
 	lastType = TypeBooleen.getInstance();
 :}
 ;

@@ -173,12 +173,12 @@ public class Evaluateur implements Visiteur{
 		Object valG = ou.getOperandeGauche().accepter(this);
 		Object valD = ou.getOperandeDroite().accepter(this);
 		if (valG != null) {
-			int valintG = ((Integer)valG).intValue();
-			return (valintG == 1)?valG:null;
+			Boolean boolG = (Boolean)valG;
+			return (boolG == true)?valG:null;
 		}
 		if (valD != null) {
-			int valintD = ((Integer)valD).intValue();
-			return (valintD == 1)?valD:null;
+			Boolean boolD = (Boolean)valD;
+			return (boolD == true)?valD:null;
 		}
 		return null;
 	}
@@ -187,13 +187,13 @@ public class Evaluateur implements Visiteur{
 	public Object visiter(Et et) {
 		Object valG = et.getOperandeGauche().accepter(this);
 		if (valG != null) {
-			int valintG = ((Integer)valG).intValue();
-			return (valintG == 0)?valG:null;
+			Boolean boolG = (Boolean)valG;
+			return (boolG == false)?valG:null;
 		}
 		Object valD = et.getOperandeDroite().accepter(this);
 		if (valD != null) {
-			int valintD = ((Integer)valD).intValue();
-			return (valintD == 0)?valD:null;
+			Boolean boolD = (Boolean)valD;
+			return (boolD == false)?valD:null;
 		}
 		return null;
 	}
