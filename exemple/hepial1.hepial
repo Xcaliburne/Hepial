@@ -2,15 +2,32 @@ programme hepial1
 
 entier x,y;
 constante entier lim = 50;
+booleen b;
+
+entier facto( entier n)
+
+debutfonc
+	si n == 0 alors
+		retourne(1);
+	sinon
+		retourne(n*facto(n-1));
+	finsi
+finfonc
 
 debutprg
+	b=vrai;
 	lire x;
 	lire y;
 	ecrire x;
 	ecrire y;
 	ecrire "";
-	tantque (x<=y) faire
+	tantque b==vrai faire
 		ecrire x;
 		x=x+1;
+		si x==lim alors
+			b=faux;
+		sinon
+			b=vrai;
+		finsi
 	fintantque
 finprg
