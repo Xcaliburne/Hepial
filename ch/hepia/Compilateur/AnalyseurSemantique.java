@@ -209,6 +209,7 @@ public class AnalyseurSemantique implements Visiteur{
 	@Override
 	public Object visiter(Lire l) {
 		// TODO Auto-generated method stub
+		l.getIdf().accepter(this);
 		return null;
 	}
 

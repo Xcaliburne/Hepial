@@ -7,6 +7,7 @@ public class Lire extends Instruction{
 
     public Lire(Idf id, int lig) {
         super(lig);
+        this.id = id;
     }
 
     public Idf getIdf() {
@@ -20,4 +21,10 @@ public class Lire extends Instruction{
     public Object accepter(Visiteur v) {
         return v.visiter(this);
     }
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "lire "+id;
+	}
 }
