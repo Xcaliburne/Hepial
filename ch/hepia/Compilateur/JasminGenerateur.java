@@ -10,12 +10,14 @@ import java.io.File;
 
 public class JasminGenerateur implements Visiteur {
 	private BufferedWriter jasminStream = null;
-	private int variableCounter = 0;
+	private Stack<Integer> nestedCounter = null;
 	private int conditionCounter = 0;
-	private int nestedCounter = 0;
+	private int andCounter = 0;
 
 	public JasminGenerateur(String filename)
 	{
+		nestedCounter = new Stack<>();
+		nestedCounter.push(0);
 		try {
 			jasminStream = new BufferedWriter(new FileWriter(new File(filename)));
 			jasminStream.write(".class public Main");
@@ -220,7 +222,7 @@ public class JasminGenerateur implements Visiteur {
 		try{
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("ifeq IN" + conditionCounter);
+			jasminStream.write("ifeq IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -235,7 +237,7 @@ public class JasminGenerateur implements Visiteur {
 		try{
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("iflt IN" + conditionCounter);
+			jasminStream.write("iflt IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -250,7 +252,7 @@ public class JasminGenerateur implements Visiteur {
 		try{
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("ifle IN" + conditionCounter);
+			jasminStream.write("ifle IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -265,7 +267,7 @@ public class JasminGenerateur implements Visiteur {
 		try{
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("ifgt IN" + conditionCounter);
+			jasminStream.write("ifgt IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -278,7 +280,7 @@ public class JasminGenerateur implements Visiteur {
 		n.getOperande().accepter(this);
 		try{
 			jasminStream.newLine();
-			jasminStream.write("ifeq IN" + conditionCounter);
+			jasminStream.write("ifeq IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -293,7 +295,7 @@ public class JasminGenerateur implements Visiteur {
 		try{
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("ifge IN" + conditionCounter);
+			jasminStream.write("ifge IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -308,7 +310,7 @@ public class JasminGenerateur implements Visiteur {
 		try{
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("ifne IN" + conditionCounter);
+			jasminStream.write("ifne IN" + nestedCounter.peek());
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
@@ -348,28 +350,29 @@ public class JasminGenerateur implements Visiteur {
 	public Object visiter(Condition c)
 	{
 		c.getCondition().accepter(this);
+		nestedCounter.push(conditionCounter + 1);
+		conditionCounter++;
 		try{
 			jasminStream.newLine();
 			if(c.getCondition() instanceof Idf)
 			{
-				jasminStream.write("ifne IN" + conditionCounter);
+				jasminStream.write("ifne IN" + nestedCounter.peek());
 				jasminStream.newLine();
 			}
-			jasminStream.write("NOTIN" + conditionCounter + ":");
+			jasminStream.write("NOTIN" + nestedCounter.peek() + ":");
 			jasminStream.newLine();
 			c.getSinon().accepter(this);
-			jasminStream.write("goto NEXT" + conditionCounter);
+			jasminStream.write("goto NEXT" + nestedCounter.peek());
 			jasminStream.newLine();
-			jasminStream.write("IN" + conditionCounter + ":");
+			jasminStream.write("IN" + nestedCounter.peek() + ":");
 			jasminStream.newLine();
 			c.getAlors().accepter(this);
-			jasminStream.write("NEXT" + conditionCounter + ":");
+			jasminStream.write("NEXT" + nestedCounter.pop() + ":");
 			jasminStream.newLine();
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
 		}
-		conditionCounter++;
 
 		return null;
 	}
@@ -407,13 +410,14 @@ public class JasminGenerateur implements Visiteur {
 		int id = p.getIdf().getJasminID();
 		if(id == -1)
 			return null;
-
+		nestedCounter.push(conditionCounter + 1);
+		conditionCounter++;
 		try{
 			jasminStream.write("ldc " + p.getBorneInf());
 			jasminStream.newLine();
 			jasminStream.write("istore " + id);
 			jasminStream.newLine();
-			jasminStream.write("IN" + conditionCounter + ":");
+			jasminStream.write("IN" + nestedCounter.peek() + ":");
 			jasminStream.newLine();
 			p.getInstr().accepter(this);
 			jasminStream.write("iinc " + id + " 1");
@@ -424,35 +428,35 @@ public class JasminGenerateur implements Visiteur {
 			jasminStream.newLine();
 			jasminStream.write("isub");
 			jasminStream.newLine();
-			jasminStream.write("ifle IN" + conditionCounter);
+			jasminStream.write("ifle IN" + nestedCounter.pop());
 			jasminStream.newLine();
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
 		}
-		conditionCounter++;
 		return null;
 	}
 
 	public Object visiter(Tantque t)
 	{
 		t.getCondition().accepter(this);
+		nestedCounter.push(conditionCounter + 1);
+		conditionCounter++;
 		try{
 			jasminStream.newLine();
-			jasminStream.write("goto NEXT" + conditionCounter);
+			jasminStream.write("goto NEXT" + nestedCounter.peek());
 			jasminStream.newLine();
-			jasminStream.write("IN" + conditionCounter + ":");
+			jasminStream.write("IN" + nestedCounter.peek() + ":");
 			jasminStream.newLine();
 			t.getBoucle().accepter(this);
 			t.getCondition().accepter(this);
 			jasminStream.newLine();
-			jasminStream.write("NEXT" + conditionCounter + ":");
+			jasminStream.write("NEXT" + nestedCounter.pop() + ":");
 			jasminStream.newLine();
 		} catch (IOException error) {
 			// TODO Auto-generated catch block
 			System.err.println(error.getMessage());
 		}
-		conditionCounter++;
 		return null;
 	}
 
@@ -472,15 +476,15 @@ public class JasminGenerateur implements Visiteur {
 
 	public Object visiter(Et et)
 	{
-		nestedCounter++;
+		andCounter++;
 		et.getOperandeGauche().accepter(this);
 		try{
 			jasminStream.newLine();
-			jasminStream.write("n" + nestedCounter);
+			jasminStream.write("n" + andCounter);
 			jasminStream.newLine();
-			jasminStream.write("goto NOTIN" + conditionCounter);
+			jasminStream.write("goto NOTIN" + nestedCounter.peek());
 			jasminStream.newLine();
-			jasminStream.write("IN" + conditionCounter + "n" + nestedCounter + ":");
+			jasminStream.write("IN" + nestedCounter.peek() + "n" + andCounter + ":");
 			jasminStream.newLine();
 			et.getOperandeDroite().accepter(this);
 			jasminStream.newLine();
