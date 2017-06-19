@@ -93,6 +93,7 @@ public class AnalyseurSemantique implements Visiteur{
 
 	@Override
 	public Object visiter(Inferieur e) {
+		System.out.println(e);
 		validerBinaire(e);
 		return null;
 	}
@@ -127,7 +128,11 @@ public class AnalyseurSemantique implements Visiteur{
 		Type typeDest = a.getDestination().getType();
 		Object v = a.getSource().accepter(Evaluateur.getInstance());
 		if (v != null){
-			a.setSource(new Nombre( (Integer)v, a.getSource().getLigne()) );
+			if (v instanceof Boolean){
+				a.setSource(new Booleen( (Boolean)v, a.getSource().getLigne()) );
+			}else{
+				a.setSource(new Nombre( (Integer)v, a.getSource().getLigne()) );
+			}
 		}
 		a.getSource().accepter(this);
 		Type typeSource = a.getSource().getType();
@@ -149,6 +154,7 @@ public class AnalyseurSemantique implements Visiteur{
 				noms.add(i.getName());
 			i.setJasminID(noms.indexOf(i.getName()));
 		}else{
+			i.setType(TypeEntier.getInstance());
 			GestionnaireErreur.getInstance().add(i.getLigne(), nd);
 		}
 		return null;
@@ -157,9 +163,10 @@ public class AnalyseurSemantique implements Visiteur{
 	@Override
 	public Object visiter(Condition c) {
 		Object v = c.getCondition().accepter(Evaluateur.getInstance());
-		if (v != null)
+		if (v != null){
+			System.out.println(v.getClass().getSimpleName());
 			c.setCondition((Booleen)v);
-		else {
+		}else {
 			c.getCondition().accepter(this);
 			if (c.getCondition().getType() != TypeBooleen.getInstance()){
 				GestionnaireErreur.getInstance().add(c.getLigne(), eb);
@@ -235,6 +242,9 @@ public class AnalyseurSemantique implements Visiteur{
 		b.getOperandeGauche().accepter(this);
 		b.getOperandeDroite().accepter(this);
 		if (!b.getOperandeDroite().getType().estConforme(b.getOperandeGauche().getType())){
+			System.out.println(b);
+			System.out.println(b.getOperandeGauche().getType());
+			System.out.println(b.getOperandeDroite().getType());
 			GestionnaireErreur.getInstance().add(b.getLigne(), ncf);
 		}
 	}

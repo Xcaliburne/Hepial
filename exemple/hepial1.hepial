@@ -1,18 +1,16 @@
 programme hepial1
 
 entier x,y;
+constante entier lim = 50;
+
 debutprg
 	lire x;
 	lire y;
 	ecrire x;
 	ecrire y;
-	si x==y alors
-		ecrire "x==y";
-	sinon
-		si x<y alors
-			ecrire "x<y";
-		sinon
-			ecrire "x>y";
-		finsi
-	finsi
+	ecrire "";
+	tantque (x<=y) faire
+		ecrire x;
+		x=x+1;
+	fintantque
 finprg
