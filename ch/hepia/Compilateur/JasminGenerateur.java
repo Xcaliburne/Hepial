@@ -3,6 +3,7 @@ package ch.hepia.Compilateur;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Stack;
 
 import ch.hepia.Compilateur.Arbre.*;
 
